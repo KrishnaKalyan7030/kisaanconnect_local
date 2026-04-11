@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KisaanConnect - Farmer Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    body { font-family: 'Poppins', sans-serif; }
+    .card { transition: all 0.3s ease; }
+    .card:hover { transform: translateY(-4px); }
+  </style>
+</head>
+<body class="bg-[#f8f9f5] min-h-screen pb-20">
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow-sm border-b sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <i class="fas fa-seedling text-3xl text-emerald-600"></i>
+        <div class="font-bold text-2xl">
+          <span class="text-emerald-700">Kisaan</span><span class="text-emerald-600">Connect</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button onclick="toggleLanguage()" id="lang-btn"
+          class="px-5 py-2 text-sm font-medium bg-emerald-100 text-emerald-700 rounded-3xl hover:bg-emerald-200">
+          हिंदी / मराठी
+        </button>
+        <button onclick="logoutUser()" 
+          class="px-5 py-2 text-sm bg-red-50 text-red-600 rounded-3xl hover:bg-red-100">
+          Logout
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-6xl mx-auto px-5 pt-8">
+
+    <!-- Welcome -->
+    <div class="mb-10">
+      <h1 id="welcome-text" class="text-3xl font-bold text-emerald-800 leading-tight">
+        स्वागत आहे, कृष्णा! 👋
+      </h1>
+      <p id="welcome-sub" class="text-gray-600 mt-1 text-lg">
+        आजचा दिवस चांगला जावो 🌾
+      </p>
+    </div>
+
+    <!-- Weather -->
+    <div class="bg-white rounded-3xl shadow p-6 mb-8 card">
+      <div class="flex justify-between items-start">
+        <div>
+          <p class="text-sm text-gray-500 flex items-center gap-2">
+            <i class="fas fa-cloud-sun"></i> हवामान • महाराष्ट्र
+          </p>
+          <div class="flex items-center gap-4 mt-3">
+            <div class="text-6xl">⛅</div>
+            <div>
+              <p class="text-5xl font-bold text-emerald-700">31°C</p>
+              <p class="text-gray-600">अंशतः ढगाळ • High: 33°C | Low: 24°C</p>
+            </div>
+          </div>
+        </div>
+        <div class="text-right text-sm">
+          <p class="text-amber-600">🌧️ संध्याकाळी हलका पाऊस शक्य</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mandi Rates -->
+    <div class="bg-white rounded-3xl shadow p-6 mb-10 card">
+      <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
+        <i class="fas fa-chart-line text-emerald-600"></i> आजचे मंडी भाव
+      </h2>
+      <div id="mandi-prices" class="grid grid-cols-2 gap-4">
+        <!-- JS will fill this -->
+      </div>
+    </div>
+
+    <!-- Big Action Buttons -->
+    <div class="grid grid-cols-2 gap-5 mb-12">
+      <a href="add_products.html" 
+         class="bg-emerald-600 hover:bg-emerald-700 text-white rounded-3xl py-10 flex flex-col items-center justify-center shadow-lg card">
+        <i class="fas fa-plus text-5xl mb-4"></i>
+        <span class="text-xl font-semibold">नवीन उत्पादन जोडा</span>
+        <span class="text-sm opacity-90 mt-1">Add New Product</span>
+      </a>
+
+      <a href="my_products.html" 
+         class="bg-white border-2 border-emerald-600 text-emerald-700 rounded-3xl py-10 flex flex-col items-center justify-center shadow card">
+        <i class="fas fa-list-ul text-5xl mb-4"></i>
+        <span class="text-xl font-semibold">माझी उत्पादने</span>
+        <span class="text-sm opacity-75 mt-1">View My Products</span>
+      </a>
+    </div>
+
+    <!-- Recent Listings -->
+    <div class="bg-white rounded-3xl shadow p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-semibold">Recent Listings</h2>
+        <a href="my-products.html" class="text-emerald-600 font-medium text-sm flex items-center gap-1">
+          सर्व पहा <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+
+      <div id="recent-listings" class="space-y-5">
+        <!-- JS populated -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentLang = 'mr'; // 'mr' or 'en'
+
+    const translations = {
+      mr: {
+        welcome: "स्वागत आहे, ",
+        sub: "आजचा दिवस चांगला जावो 🌾"
+      },
+      en: {
+        welcome: "Welcome back, ",
+        sub: "Have a great day 🌾"
+      }
+    };
+
+    function getCurrentUser() {
+      return JSON.parse(sessionStorage.getItem('currentUser') || localStorage.getItem('currentUser') || '{}');
+    }
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'mr' ? 'en' : 'mr';
+      updateWelcome();
+    }
+
+    function updateWelcome() {
+      const user = getCurrentUser();
+      const name = user.name ? user.name.split(' ')[0] : 'कृष्णा';
+      document.getElementById('welcome-text').innerHTML = 
+        translations[currentLang].welcome + name + '! 👋';
+      document.getElementById('welcome-sub').textContent = translations[currentLang].sub;
+    }
+
+    function loadMandiPrices() {
+      const prices = [
+        { crop: "कांदा (Onion)", rate: "₹18-28/kg" },
+        { crop: "टोमॅटो", rate: "₹12-22/kg" },
+        { crop: "बटाटा", rate: "₹10-16/kg" },
+        { crop: "सोयाबीन", rate: "₹42-48/kg" }
+      ];
+
+      let html = '';
+      prices.forEach(p => {
+        html += `
+          <div class="bg-gray-50 p-4 rounded-2xl">
+            <p class="font-medium">${p.crop}</p>
+            <p class="text-emerald-700 font-semibold text-lg">${p.rate}</p>
+          </div>`;
+      });
+      document.getElementById('mandi-prices').innerHTML = html;
+    }
+
+    function loadRecentListings() {
+      let products = JSON.parse(localStorage.getItem('farmerProducts')) || [];
+      const container = document.getElementById('recent-listings');
+
+      if (products.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12 text-gray-400">
+            <i class="fas fa-seedling text-6xl mb-4"></i>
+            <p class="text-lg">आपण अद्याप कोणतेही उत्पादन जोडले नाही</p>
+            <a href="add-product.html" class="mt-6 inline-block text-emerald-600 font-medium">
+              पहिले उत्पादन जोडा →
+            </a>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = '';
+      products.slice(0, 3).forEach(product => {
+        const div = document.createElement('div');
+        div.className = "flex justify-between items-center bg-gray-50 p-5 rounded-2xl";
+        div.innerHTML = `
+          <div>
+            <p class="font-semibold text-lg">${product.name}</p>
+            <p class="text-sm text-gray-600">${product.village || 'गाव'} • ₹${product.price}/kg • ${product.quantity} kg</p>
+          </div>
+          <div class="text-right">
+            <span class="px-4 py-2 bg-emerald-100 text-emerald-700 text-xs rounded-3xl font-medium">
+              उपलब्ध
+            </span>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function logoutUser() {
+      if (confirm("तुम्ही लॉगआउट करू इच्छिता?")) {
+        sessionStorage.clear();
+        localStorage.removeItem('currentUser');
+        window.location.href = "../../login.html";
+      }
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      const user = getCurrentUser();
+      if (!user || user.role !== 'farmer') {
+        window.location.href = "../../login.html";
+        return;
+      }
+
+      updateWelcome();
+      loadMandiPrices();
+      loadRecentListings();
+    });
+
+    window.toggleLanguage = toggleLanguage;
+    window.logoutUser = logoutUser;
+  </script>
+</body>
+</html>

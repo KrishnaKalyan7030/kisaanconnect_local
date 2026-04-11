@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Buyer Dashboard - KisaanConnect Local</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+ 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="../../js/api.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    body { font-family: 'Poppins', sans-serif; }
+  </style>
+</head>
+<body class="bg-[#f8f9f5]">
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow-sm border-b sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <i class="fas fa-seedling text-3xl text-emerald-600"></i>
+        <div>
+          <span class="text-2xl font-bold text-emerald-700">Kisaan</span>
+          <span class="text-2xl font-bold text-emerald-600">Connect</span>
+          <span class="text-xs text-emerald-500 block -mt-1">Buyer Dashboard</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-8 text-sm font-medium">
+        <a href="../../marketplace.html" class="hover:text-emerald-600">Marketplace</a>
+        <a href="#" class="text-emerald-600 font-semibold">My Dashboard</a>
+        <a href="#" class="hover:text-emerald-600">Orders</a>
+        <button onclick="window.API.logoutUser()" 
+          class="px-5 py-2 text-sm border border-emerald-600 text-emerald-700 rounded-full hover:bg-emerald-50">
+          Logout
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-7xl mx-auto px-6 py-10">
+    <!-- Welcome -->
+    <div class="mb-12">
+      <h1 class="text-4xl font-bold text-emerald-800">Welcome back, Buyer! 🛒</h1>
+      <p class="text-gray-600 mt-2 text-lg">Discover fresh produce from local farmers</p>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+      <div class="bg-white rounded-3xl p-8 shadow">
+        <div class="flex justify-between">
+          <div>
+            <p class="text-gray-500">Available Products</p>
+            <p id="available-count" class="text-5xl font-bold text-emerald-700 mt-3">0</p>
+          </div>
+          <i class="fas fa-carrot text-5xl text-emerald-200"></i>
+        </div>
+      </div>
+      <div class="bg-white rounded-3xl p-8 shadow">
+        <div class="flex justify-between">
+          <div>
+            <p class="text-gray-500">Farmers Connected</p>
+            <p id="farmers-count" class="text-5xl font-bold text-emerald-700 mt-3">0</p>
+          </div>
+          <i class="fas fa-users text-5xl text-emerald-200"></i>
+        </div>
+      </div>
+      <div class="bg-white rounded-3xl p-8 shadow">
+        <div class="flex justify-between">
+          <div>
+            <p class="text-gray-500">This Week</p>
+            <p id="this-week" class="text-5xl font-bold text-emerald-700 mt-3">12</p>
+          </div>
+          <i class="fas fa-calendar text-5xl text-emerald-200"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="mb-10">
+      <div class="relative max-w-2xl">
+        <input type="text" id="search-input" placeholder="Search for tomatoes, spinach, onions..." 
+          onkeyup="if(event.key === 'Enter') goToMarketplace()"
+          class="w-full px-6 py-5 pl-14 text-lg border border-gray-300 rounded-3xl focus:outline-none focus:border-emerald-500"/>
+        <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 text-xl"></i>
+      </div>
+    </div>
+
+    <!-- Featured / Recommended -->
+    <div class="mb-8 flex justify-between items-center">
+      <h2 class="text-3xl font-semibold text-emerald-800">Fresh Picks for You</h2>
+      <a href="../../marketplace.html" 
+        class="text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-2">
+        Browse All <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <div id="featured-products" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <!-- Populated by JavaScript -->
+    </div>
+  </div>
+
+  <script>
+    async function loadBuyerDashboard() {
+      const result = await window.API.getAllProducts();
+
+      if (!result.success) {
+        window.API.showToast("Failed to load products", "error");
+        return;
+      }
+
+      const products = result.data || [];
+
+      // Update stats
+      document.getElementById('available-count').textContent = products.length;
+
+      // Render Featured Products (first 4)
+      const container = document.getElementById('featured-products');
+      container.innerHTML = '';
+
+      products.slice(0, 4).forEach(product => {
+        const card = document.createElement('div');
+        card.className = "bg-white rounded-3xl overflow-hidden shadow hover:shadow-xl transition cursor-pointer";
+        card.onclick = () => viewProduct(product.id);
+        card.innerHTML = `
+          <img src="${product.image_url || 'https://picsum.photos/id/201/400/300'}" 
+               class="w-full h-52 object-cover" alt="${product.name}">
+          <div class="p-6">
+            <h3 class="font-semibold text-xl">${product.name}</h3>
+            <p class="text-emerald-600 font-bold text-3xl mt-1">₹${product.price}/kg</p>
+            <p class="text-gray-500 text-sm mt-3">${product.quantity} kg available</p>
+            <p class="text-xs text-gray-400 mt-1">Till ${product.available_till_date}</p>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function viewProduct(id) {
+      window.location.href = `../../marketplace.html?product=${id}`;
+    }
+
+    function goToMarketplace() {
+      const query = document.getElementById('search-input').value.trim();
+      if (query) {
+        window.location.href = `../../marketplace.html?search=${encodeURIComponent(query)}`;
+      } else {
+        window.location.href = "../../marketplace.html";
+      }
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!window.API.isLoggedIn()) {
+        window.location.href = "../../login.html";
+        return;
+      }
+
+      if (window.API.getUserRole() !== 'buyer') {
+        window.API.redirectBasedOnRole();
+        return;
+      }
+
+      loadBuyerDashboard();
+    });
+  </script>
+
+   <script src="dashboard/buyer/js/api.js"></script>
+  <script src="dashboard/buyer/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register - KisaanConnect Local</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="js/api.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    body { font-family: 'Poppins', sans-serif; }
+    .register-bg {
+      background: linear-gradient(rgba(22, 101, 52, 0.88), rgba(22, 101, 52, 0.92)), 
+                  url('https://picsum.photos/id/1015/1920/1080') center/cover;
+    }
+  </style>
+</head>
+<body class="bg-[#f8f9f5] min-h-screen">
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow-sm border-b">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <i class="fas fa-seedling text-3xl text-emerald-600"></i>
+        <div>
+          <span class="text-2xl font-bold text-emerald-700">Kisaan</span>
+          <span class="text-2xl font-bold text-emerald-600">Connect</span>
+        </div>
+      </div>
+      <a href="login.html" class="text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-2">
+        <i class="fas fa-arrow-left"></i> Back to Login
+      </a>
+    </div>
+  </nav>
+
+  <div class="min-h-[calc(100vh-73px)] flex items-center justify-center p-6">
+    <div class="max-w-lg w-full">
+      <!-- Register Card -->
+      <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+        <div class="register-bg h-56 flex items-center justify-center text-white">
+          <div class="text-center">
+            <i class="fas fa-handshake text-6xl mb-4"></i>
+            <h1 class="text-3xl font-bold">Join KisaanConnect</h1>
+            <p class="text-emerald-100 mt-2">Start your journey with us</p>
+          </div>
+        </div>
+
+        <div class="p-8">
+          <form id="register-form" onsubmit="handleRegister(event)">
+            
+            <!-- Full Name -->
+            <div class="mb-6">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+              <input type="text" id="name" 
+                class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-emerald-600 text-lg"
+                placeholder="Enter your full name" required />
+            </div>
+
+            <!-- Email -->
+            <div class="mb-6">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+              <input type="email" id="email" 
+                class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-emerald-600 text-lg"
+                placeholder="your@email.com" required />
+            </div>
+
+            <!-- Phone Number -->
+            <div class="mb-6">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+              <input type="tel" id="phone" 
+                class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-emerald-600 text-lg"
+                placeholder="+91 98765 43210" required />
+            </div>
+
+            <!-- Password -->
+            <div class="mb-6">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+              <input type="password" id="password" 
+                class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-emerald-600 text-lg"
+                placeholder="Create a strong password" required />
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="mb-8">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+              <input type="password" id="confirm-password" 
+                class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-emerald-600 text-lg"
+                placeholder="Confirm your password" required />
+            </div>
+
+            <!-- village -->
+               <div class="mb-6">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Village</label>
+              <input type="text" id="village" 
+                class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-emerald-600 text-lg"
+                placeholder="village" required />
+            </div>
+               
+            <!-- district -->
+               <div class="mb-6">
+              <label class="block text-sm font-medium text-gray-700 mb-2">District</label>
+              <input type="text" id="district" 
+                class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-emerald-600 text-lg"
+                placeholder="District" required />
+            </div>
+
+            <!-- Role Selection -->
+            <div class="mb-8">
+              <label class="block text-sm font-medium text-gray-700 mb-3">Register as</label>
+              <div class="grid grid-cols-2 gap-4">
+                <button type="button" onclick="selectRole(this)" data-role="farmer"
+                  class="role-btn py-5 border-2 border-gray-200 rounded-3xl font-medium hover:border-emerald-500 transition flex flex-col items-center gap-3">
+                  <i class="fas fa-seedling text-3xl text-emerald-600"></i>
+                  <span>Farmer</span>
+                </button>
+                <button type="button" onclick="selectRole(this)" data-role="buyer"
+                  class="role-btn py-5 border-2 border-gray-200 rounded-3xl font-medium hover:border-emerald-500 transition flex flex-col items-center gap-3">
+                  <i class="fas fa-shopping-basket text-3xl text-emerald-600"></i>
+                  <span>Buyer</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Register Button -->
+            <button type="submit" id="register-btn"
+              class="w-full bg-emerald-600 hover:bg-emerald-700 transition-all text-white font-semibold text-lg py-5 rounded-3xl flex items-center justify-center gap-3">
+              Create Account
+            </button>
+          </form>
+
+          <!-- Login Link -->
+          <div class="text-center mt-8">
+            <p class="text-gray-600">
+              Already have an account? 
+              <a href="login.html" class="text-emerald-600 font-semibold hover:underline">Login here</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed bottom-6 right-6 space-y-3 z-50"></div>
+
+  <script>
+    let selectedRole = null;
+
+    function selectRole(btn) {
+      document.querySelectorAll('.role-btn').forEach(b => {
+        b.classList.remove('border-emerald-600', 'bg-emerald-50');
+      });
+      btn.classList.add('border-emerald-600', 'bg-emerald-50');
+      selectedRole = btn.getAttribute('data-role');
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const confirmPassword = document.getElementById('confirm-password').value.trim();
+      const registerBtn = document.getElementById('register-btn');
+
+      // Validation
+      if (!selectedRole) {
+        showToast("Please select Farmer or Buyer role", "error");
+        return;
+      }
+
+      if (!name || !email || !phone || !password || !confirmPassword) {
+        showToast("All fields are required", "error");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showToast("Passwords do not match", "error");
+        return;
+      }
+
+      if (password.length < 6) {
+        showToast("Password must be at least 6 characters", "error");
+        return;
+      }
+
+      // Get existing users from localStorage
+      let users = JSON.parse(localStorage.getItem('users')) || [];
+
+      // Check if email already exists
+      const emailExists = users.some(user => user.email === email);
+      if (emailExists) {
+        showToast("Email already registered. Please use a different email.", "error");
+        return;
+      }
+
+      // Check if phone already exists
+      const phoneExists = users.some(user => user.phone === phone);
+      if (phoneExists) {
+        showToast("Phone number already registered. Please use a different number.", "error");
+        return;
+      }
+
+      // Create user object
+      const newUser = {
+        id: Date.now(), // Unique ID
+        name: name,
+        email: email,
+        phone: phone,
+        password: password, // In a real app, you should hash this!
+        role: selectedRole,
+        createdAt: new Date().toISOString()
+      };
+
+      // Show loading
+      const originalText = registerBtn.innerHTML;
+      registerBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Creating account...`;
+      registerBtn.disabled = true;
+
+      try {
+        // Store in localStorage
+        users.push(newUser);
+        localStorage.setItem('users', JSON.stringify(users));
+        
+        // Log for debugging
+        console.log('User registered:', newUser);
+        console.log('Total users:', users.length);
+        
+        // Also store the current user in session storage for immediate use
+        sessionStorage.setItem('currentUser', JSON.stringify(newUser));
+        
+        showToast("Account created successfully! 🌱 Redirecting to login...", "success");
+        
+        // Optional: Call API if needed (comment out if API is not working)
+        // const result = await window.API.registerUser(name, email, phone, password, selectedRole);
+        
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 1800);
+        
+      } catch (error) {
+        console.error('Registration error:', error);
+        showToast("Something went wrong. Please try again.", "error");
+      } finally {
+        registerBtn.innerHTML = originalText;
+        registerBtn.disabled = false;
+      }
+    }
+
+    function showToast(message, type = "success") {
+      const toast = document.createElement('div');
+      toast.className = `px-6 py-4 rounded-3xl shadow-2xl flex items-center gap-3 text-white 
+                         ${type === 'success' ? 'bg-emerald-600' : 'bg-red-500'}`;
+      toast.innerHTML = `
+        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+        <span class="font-medium">${message}</span>
+      `;
+      
+      const container = document.getElementById('toast-container');
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.transition = 'all 0.4s ease';
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(20px)';
+        setTimeout(() => toast.remove(), 400);
+      }, 3000);
+    }
+
+    // Optional: Auto focus on name field
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('name').focus();
+    });
+  </script>
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

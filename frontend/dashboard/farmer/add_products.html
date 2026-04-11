@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>नवीन उत्पादन जोडा - KisaanConnect</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    body { font-family: 'Poppins', sans-serif; }
+    .input-field {
+      transition: all 0.3s ease;
+    }
+    .input-field:focus {
+      border-color: #166534;
+      box-shadow: 0 0 0 4px rgba(22, 101, 52, 0.15);
+    }
+  </style>
+</head>
+<body class="bg-[#f8f9f5] min-h-screen pb-20">
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow-sm border-b sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <i class="fas fa-seedling text-3xl text-emerald-600"></i>
+        <div class="font-bold text-2xl">
+          <span class="text-emerald-700">Kisaan</span><span class="text-emerald-600">Connect</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="my_products.html" class="text-emerald-700 font-medium">माझी उत्पादने</a>
+        <a href="index.html" class="text-emerald-700 font-medium">Dashboard</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-2xl mx-auto px-5 py-8">
+
+    <!-- Header -->
+    <div class="flex items-center gap-4 mb-10">
+      <div class="w-12 h-12 bg-emerald-100 rounded-3xl flex items-center justify-center flex-shrink-0">
+        <i class="fas fa-plus text-3xl text-emerald-600"></i>
+      </div>
+      <div>
+        <h1 class="text-3xl font-bold text-emerald-800">नवीन उत्पादन जोडा</h1>
+        <p class="text-gray-600">खरेदीदारांना तुमचा ताजा माल दाखवा</p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-3xl shadow-xl p-8">
+
+      <form id="product-form" onsubmit="handleSubmit(event)">
+
+        <!-- Product Image -->
+        <div class="mb-8">
+          <label class="block text-sm font-medium text-gray-700 mb-3">उत्पादनाची फोटो</label>
+          <div id="image-upload-area" 
+               class="border-2 border-dashed border-gray-300 rounded-3xl p-10 text-center hover:border-emerald-500 transition-all cursor-pointer">
+            <input type="file" id="product-image" accept="image/*" class="hidden" onchange="previewImage(event)"/>
+            <i class="fas fa-camera text-5xl text-emerald-400 mb-4"></i>
+            <p class="font-medium text-gray-600">फोटो निवडा किंवा कॅप्चर करा</p>
+            <p class="text-xs text-gray-500 mt-1">JPEG किंवा PNG</p>
+          </div>
+          
+          <div id="image-preview" class="hidden mt-6">
+            <img id="preview-img" class="w-full rounded-3xl shadow-md" alt="Product Preview"/>
+            <button type="button" onclick="removeImage()" 
+              class="mt-3 text-red-600 text-sm font-medium flex items-center gap-2">
+              <i class="fas fa-trash"></i> फोटो काढून टाका
+            </button>
+          </div>
+        </div>
+
+        <!-- Product Name -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">उत्पादनाचे नाव</label>
+          <input type="text" id="product-name" 
+            class="input-field w-full px-6 py-5 border border-gray-300 rounded-3xl text-lg"
+            placeholder="उदा. ताजे टोमॅटो" required />
+        </div>
+
+        <div class="grid grid-cols-2 gap-6 mb-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">गाव (Village)</label>
+            <input type="text" id="village" 
+              class="input-field w-full px-6 py-5 border border-gray-300 rounded-3xl text-lg"
+              placeholder="तुमचे गाव" required />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">मोबाईल नंबर</label>
+            <input type="tel" id="phone" 
+              class="input-field w-full px-6 py-5 border border-gray-300 rounded-3xl text-lg bg-gray-50"
+              readonly />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-6 mb-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">किंमत (₹ प्रति किलो)</label>
+            <input type="number" id="price" step="1" min="1"
+              class="input-field w-full px-6 py-5 border border-gray-300 rounded-3xl text-lg"
+              placeholder="उदा. 25" required />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">मात्रा (किलो)</label>
+            <input type="number" id="quantity" min="1"
+              class="input-field w-full px-6 py-5 border border-gray-300 rounded-3xl text-lg"
+              placeholder="उदा. 50" required />
+          </div>
+        </div>
+
+        <!-- Available Till Date & Time -->
+        <div class="mb-8">
+          <label class="block text-sm font-medium text-gray-700 mb-3">उपलब्धता कधीपर्यंत?</label>
+          <div class="grid grid-cols-2 gap-6">
+            <div>
+              <label class="block text-xs text-gray-500 mb-1">तारीख (Date)</label>
+              <input type="date" id="available-date"
+                class="input-field w-full px-6 py-5 border border-gray-300 rounded-3xl text-lg" required />
+            </div>
+            <div>
+              <label class="block text-xs text-gray-500 mb-1">वेळ (Time)</label>
+              <input type="time" id="available-time"
+                class="input-field w-full px-6 py-5 border border-gray-300 rounded-3xl text-lg" required />
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-8">
+          <label class="block text-sm font-medium text-gray-700 mb-2">अधिक माहिती (Optional)</label>
+          <textarea id="description" rows="3"
+            class="input-field w-full px-6 py-5 border border-gray-300 rounded-3xl text-lg resize-y"
+            placeholder="उत्पादनाबद्दल थोडी माहिती..."></textarea>
+        </div>
+
+        <!-- Publish Button -->
+        <button type="submit" id="publish-btn"
+          class="w-full bg-emerald-600 hover:bg-emerald-700 transition-all text-white font-semibold text-xl py-6 rounded-3xl flex items-center justify-center gap-3 shadow-lg">
+          <i class="fas fa-paper-plane"></i>
+          <span>उत्पादन प्रकाशित करा</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("image-upload-area").addEventListener("click", function () {
+  document.getElementById("product-image").click();
+   });
+    let currentImageData = null;
+
+    function previewImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          currentImageData = e.target.result;
+          document.getElementById('preview-img').src = currentImageData;
+          document.getElementById('image-preview').classList.remove('hidden');
+          document.getElementById('image-upload-area').classList.add('hidden');
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function removeImage() {
+      currentImageData = null;
+      document.getElementById('image-preview').classList.add('hidden');
+      document.getElementById('image-upload-area').classList.remove('hidden');
+      document.getElementById('product-image').value = '';
+    }
+
+    function handleSubmit(e) {
+      e.preventDefault();
+
+      const publishBtn = document.getElementById('publish-btn');
+      const originalText = publishBtn.innerHTML;
+      publishBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> प्रकाशित होत आहे...`;
+      publishBtn.disabled = true;
+
+      const productData = {
+        id: Date.now(),
+        name: document.getElementById('product-name').value.trim(),
+        village: document.getElementById('village').value.trim(),
+        mobile: document.getElementById('phone').value.trim(),
+        price: parseFloat(document.getElementById('price').value),
+        quantity: parseFloat(document.getElementById('quantity').value),
+        available_till: document.getElementById('available-date').value,
+        available_till_time: document.getElementById('available-time').value,
+        description: document.getElementById('description').value.trim(),
+        image_url: currentImageData || 'https://picsum.photos/id/201/600/400',
+        createdAt: new Date().toISOString()
+      };
+
+      // Save to localStorage
+      let products = JSON.parse(localStorage.getItem('farmerProducts')) || [];
+      products.unshift(productData);
+      localStorage.setItem('farmerProducts', JSON.stringify(products));
+
+      alert("✅ तुमचे उत्पादन यशस्वीरित्या जोडले गेले!");
+      
+      setTimeout(() => {
+        window.location.href = "my_products.html";
+        window.Location.href="/marketplace.html"
+      }, 800);
+    }
+
+    // Pre-fill phone & set minimum date
+    document.addEventListener('DOMContentLoaded', () => {
+      const user = JSON.parse(sessionStorage.getItem('currentUser') || localStorage.getItem('currentUser') || '{}');
+      
+      if (user.phone) {
+        document.getElementById('phone').value = user.phone;
+      }
+
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('available-date').setAttribute('min', today);
+    });
+  </script>
+</body>
+</html>

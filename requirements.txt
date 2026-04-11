@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+pydantic-settings
+python-dotenv
+python-jose[cryptography]
+passlib[bcrypt]
+sqlalchemy
+alembic
+psycopg2-binary   # for PostgreSQL later (safe to keep even for SQLite)
