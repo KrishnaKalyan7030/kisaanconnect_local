@@ -113,113 +113,163 @@
   </div>
 
   <script>
-    let currentLang = 'mr'; // 'mr' or 'en'
+let currentLang = 'mr';
 
-    const translations = {
-      mr: {
-        welcome: "स्वागत आहे, ",
-        sub: "आजचा दिवस चांगला जावो 🌾"
-      },
-      en: {
-        welcome: "Welcome back, ",
-        sub: "Have a great day 🌾"
+const translations = {
+  mr: {
+    welcome: "स्वागत आहे, ",
+    sub: "आजचा दिवस चांगला जावो 🌾"
+  },
+  en: {
+    welcome: "Welcome back, ",
+    sub: "Have a great day 🌾"
+  }
+};
+
+// ✅ Get token & role
+function getAuthData() {
+  return {
+    token: localStorage.getItem('access_token'),
+    role: localStorage.getItem('user_type')
+  };
+}
+
+// ✅ Fetch current user from backend
+async function fetchCurrentUser() {
+  const { token } = getAuthData();
+
+  try {
+    const res = await fetch("http://127.0.0.1:8000/auth/me", {
+      headers: {
+        "Authorization": `Bearer ${token}`
       }
-    };
-
-    function getCurrentUser() {
-      return JSON.parse(sessionStorage.getItem('currentUser') || localStorage.getItem('currentUser') || '{}');
-    }
-
-    function toggleLanguage() {
-      currentLang = currentLang === 'mr' ? 'en' : 'mr';
-      updateWelcome();
-    }
-
-    function updateWelcome() {
-      const user = getCurrentUser();
-      const name = user.name ? user.name.split(' ')[0] : 'कृष्णा';
-      document.getElementById('welcome-text').innerHTML = 
-        translations[currentLang].welcome + name + '! 👋';
-      document.getElementById('welcome-sub').textContent = translations[currentLang].sub;
-    }
-
-    function loadMandiPrices() {
-      const prices = [
-        { crop: "कांदा (Onion)", rate: "₹18-28/kg" },
-        { crop: "टोमॅटो", rate: "₹12-22/kg" },
-        { crop: "बटाटा", rate: "₹10-16/kg" },
-        { crop: "सोयाबीन", rate: "₹42-48/kg" }
-      ];
-
-      let html = '';
-      prices.forEach(p => {
-        html += `
-          <div class="bg-gray-50 p-4 rounded-2xl">
-            <p class="font-medium">${p.crop}</p>
-            <p class="text-emerald-700 font-semibold text-lg">${p.rate}</p>
-          </div>`;
-      });
-      document.getElementById('mandi-prices').innerHTML = html;
-    }
-
-    function loadRecentListings() {
-      let products = JSON.parse(localStorage.getItem('farmerProducts')) || [];
-      const container = document.getElementById('recent-listings');
-
-      if (products.length === 0) {
-        container.innerHTML = `
-          <div class="text-center py-12 text-gray-400">
-            <i class="fas fa-seedling text-6xl mb-4"></i>
-            <p class="text-lg">आपण अद्याप कोणतेही उत्पादन जोडले नाही</p>
-            <a href="add-product.html" class="mt-6 inline-block text-emerald-600 font-medium">
-              पहिले उत्पादन जोडा →
-            </a>
-          </div>`;
-        return;
-      }
-
-      container.innerHTML = '';
-      products.slice(0, 3).forEach(product => {
-        const div = document.createElement('div');
-        div.className = "flex justify-between items-center bg-gray-50 p-5 rounded-2xl";
-        div.innerHTML = `
-          <div>
-            <p class="font-semibold text-lg">${product.name}</p>
-            <p class="text-sm text-gray-600">${product.village || 'गाव'} • ₹${product.price}/kg • ${product.quantity} kg</p>
-          </div>
-          <div class="text-right">
-            <span class="px-4 py-2 bg-emerald-100 text-emerald-700 text-xs rounded-3xl font-medium">
-              उपलब्ध
-            </span>
-          </div>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    function logoutUser() {
-      if (confirm("तुम्ही लॉगआउट करू इच्छिता?")) {
-        sessionStorage.clear();
-        localStorage.removeItem('currentUser');
-        window.location.href = "../../login.html";
-      }
-    }
-
-    // Initialize
-    document.addEventListener('DOMContentLoaded', () => {
-      const user = getCurrentUser();
-      if (!user || user.role !== 'farmer') {
-        window.location.href = "../../login.html";
-        return;
-      }
-
-      updateWelcome();
-      loadMandiPrices();
-      loadRecentListings();
     });
 
-    window.toggleLanguage = toggleLanguage;
-    window.logoutUser = logoutUser;
-  </script>
+    if (!res.ok) throw new Error("Unauthorized");
+
+    return await res.json();
+
+  } catch (err) {
+    console.error("Auth error:", err);
+    return null;
+  }
+}
+
+function toggleLanguage() {
+  currentLang = currentLang === 'mr' ? 'en' : 'mr';
+  updateWelcome(window.currentUser);
+}
+
+// ✅ Update UI
+function updateWelcome(user) {
+  const name = user?.name ? user.name.split(' ')[0] : 'कृष्णा';
+
+  document.getElementById('welcome-text').innerHTML =
+    translations[currentLang].welcome + name + '! 👋';
+
+  document.getElementById('welcome-sub').textContent =
+    translations[currentLang].sub;
+}
+
+// (same mandi + listings functions — no change)
+function loadMandiPrices() {
+  const prices = [
+    { crop: "कांदा (Onion)", rate: "₹18-28/kg" },
+    { crop: "टोमॅटो", rate: "₹12-22/kg" },
+    { crop: "बटाटा", rate: "₹10-16/kg" },
+    { crop: "सोयाबीन", rate: "₹42-48/kg" }
+  ];
+
+  let html = '';
+  prices.forEach(p => {
+    html += `
+      <div class="bg-gray-50 p-4 rounded-2xl">
+        <p class="font-medium">${p.crop}</p>
+        <p class="text-emerald-700 font-semibold text-lg">${p.rate}</p>
+      </div>`;
+  });
+
+  document.getElementById('mandi-prices').innerHTML = html;
+}
+
+function loadRecentListings() {
+  let products = JSON.parse(localStorage.getItem('farmerProducts')) || [];
+  const container = document.getElementById('recent-listings');
+
+  if (products.length === 0) {
+    container.innerHTML = `
+      <div class="text-center py-12 text-gray-400">
+        <i class="fas fa-seedling text-6xl mb-4"></i>
+        <p class="text-lg">आपण अद्याप कोणतेही उत्पादन जोडले नाही</p>
+        <a href="add-product.html" class="mt-6 inline-block text-emerald-600 font-medium">
+          पहिले उत्पादन जोडा →
+        </a>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = '';
+  products.slice(0, 3).forEach(product => {
+    const div = document.createElement('div');
+    div.className = "flex justify-between items-center bg-gray-50 p-5 rounded-2xl";
+    div.innerHTML = `
+      <div>
+        <p class="font-semibold text-lg">${product.name}</p>
+        <p class="text-sm text-gray-600">${product.village || 'गाव'} • ₹${product.price}/kg • ${product.quantity} kg</p>
+      </div>
+      <div class="text-right">
+        <span class="px-4 py-2 bg-emerald-100 text-emerald-700 text-xs rounded-3xl font-medium">
+          उपलब्ध
+        </span>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+// ✅ Logout
+function logoutUser() {
+  if (confirm("तुम्ही लॉगआउट करू इच्छिता?")) {
+    localStorage.clear();
+    window.location.href = "/login.html";
+  }
+}
+
+// ================= INIT =================
+document.addEventListener('DOMContentLoaded', async () => {
+
+  const { token, role } = getAuthData();
+
+  // 🚨 No token → go login
+  if (!token) {
+    window.location.href = "/login.html";
+    return;
+  }
+
+  // 🚨 Wrong role → block
+  if (role !== 'farmer') {
+    window.location.href = "/login.html";
+    return;
+  }
+
+  // ✅ Fetch user from backend
+  const user = await fetchCurrentUser();
+
+  if (!user) {
+    window.location.href = "/login.html";
+    return;
+  }
+
+  // Store globally
+  window.currentUser = user;
+
+  updateWelcome(user);
+  loadMandiPrices();
+  loadRecentListings();
+});
+
+window.toggleLanguage = toggleLanguage;
+window.logoutUser = logoutUser;
+</script>
 </body>
 </html>

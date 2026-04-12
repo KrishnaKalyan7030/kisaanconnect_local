@@ -146,78 +146,51 @@
   </div>
 
   <script>
-    document.getElementById("image-upload-area").addEventListener("click", function () {
-  document.getElementById("product-image").click();
-   });
-    let currentImageData = null;
+async function handleSubmit(e) {
+  e.preventDefault();
 
-    function previewImage(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          currentImageData = e.target.result;
-          document.getElementById('preview-img').src = currentImageData;
-          document.getElementById('image-preview').classList.remove('hidden');
-          document.getElementById('image-upload-area').classList.add('hidden');
-        };
-        reader.readAsDataURL(file);
-      }
-    }
+  const token = localStorage.getItem("access_token");
 
-    function removeImage() {
-      currentImageData = null;
-      document.getElementById('image-preview').classList.add('hidden');
-      document.getElementById('image-upload-area').classList.remove('hidden');
-      document.getElementById('product-image').value = '';
-    }
+  const publishBtn = document.getElementById('publish-btn');
+  publishBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> प्रकाशित होत आहे...`;
+  publishBtn.disabled = true;
 
-    function handleSubmit(e) {
-      e.preventDefault();
+  const productData = {
+    name: document.getElementById('product-name').value.trim(),
+    village: document.getElementById('village').value.trim(),
+    phone: document.getElementById('phone').value.trim(),
+    price: parseFloat(document.getElementById('price').value),
+    quantity: parseFloat(document.getElementById('quantity').value),
+    available_date: document.getElementById('available-date').value,
+    available_time: document.getElementById('available-time').value,
+    description: document.getElementById('description').value.trim(),
+    image_url: currentImageData || 'https://picsum.photos/id/201/600/400'
+  };
 
-      const publishBtn = document.getElementById('publish-btn');
-      const originalText = publishBtn.innerHTML;
-      publishBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> प्रकाशित होत आहे...`;
-      publishBtn.disabled = true;
-
-      const productData = {
-        id: Date.now(),
-        name: document.getElementById('product-name').value.trim(),
-        village: document.getElementById('village').value.trim(),
-        mobile: document.getElementById('phone').value.trim(),
-        price: parseFloat(document.getElementById('price').value),
-        quantity: parseFloat(document.getElementById('quantity').value),
-        available_till: document.getElementById('available-date').value,
-        available_till_time: document.getElementById('available-time').value,
-        description: document.getElementById('description').value.trim(),
-        image_url: currentImageData || 'https://picsum.photos/id/201/600/400',
-        createdAt: new Date().toISOString()
-      };
-
-      // Save to localStorage
-      let products = JSON.parse(localStorage.getItem('farmerProducts')) || [];
-      products.unshift(productData);
-      localStorage.setItem('farmerProducts', JSON.stringify(products));
-
-      alert("✅ तुमचे उत्पादन यशस्वीरित्या जोडले गेले!");
-      
-      setTimeout(() => {
-        window.location.href = "my_products.html";
-        window.Location.href="/marketplace.html"
-      }, 800);
-    }
-
-    // Pre-fill phone & set minimum date
-    document.addEventListener('DOMContentLoaded', () => {
-      const user = JSON.parse(sessionStorage.getItem('currentUser') || localStorage.getItem('currentUser') || '{}');
-      
-      if (user.phone) {
-        document.getElementById('phone').value = user.phone;
-      }
-
-      const today = new Date().toISOString().split('T')[0];
-      document.getElementById('available-date').setAttribute('min', today);
+  try {
+    const res = await fetch("http://127.0.0.1:8000/products", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify(productData)
     });
-  </script>
+
+    if (res.ok) {
+      alert("✅ उत्पादन यशस्वीरित्या जोडले गेले!");
+
+      // Redirect to marketplace
+      window.location.href = "/marketplace.html";
+    } else {
+      alert("❌ उत्पादन जोडण्यात अयशस्वी");
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert("❌ Server error");
+  }
+}
+</script>
 </body>
 </html>
