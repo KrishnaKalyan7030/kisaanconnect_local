@@ -8,8 +8,8 @@ from backend.db.database import Base,engine
 # IMPORTANT: Import all models so that create_all() knows about them
 from backend.models.user import User   # ← This line is critical
 # Import router and settings
-from backend.router.auth import router
-from backend.router.product import router
+from backend.router.auth import router as auth_router
+from backend.router.product import router as product_router
 from backend.core.config import settings
 import os
 os.makedirs("uploads", exist_ok=True)  
@@ -35,8 +35,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(router)
-app.include_router(router,tags=['Products'])
+app.include_router(auth_router,tags=['Authentication'])
+app.include_router(product_router,tags=['Products'])
 
 # Serve all frontend HTML files from root
 app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")

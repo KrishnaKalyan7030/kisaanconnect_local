@@ -1,16 +1,12 @@
-from fastapi import APIRouter, Depends, UploadFile, File
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from sqlalchemy.orm import Session
-from jose import jwt
 from backend.db.database import get_db
 from backend.models.product import Product
 from backend.schemas.product import ProductCreate
-from backend.utils.jwt import create_access_token
-from backend.core.config import settings
+from backend.dependencies.auth import get_current_user
 import shutil, os, uuid
-from backend.dependencies.auth import get_current_user,oauth2_scheme
 
-router=APIRouter()
-
+router = APIRouter(prefix="/products", tags=["Products"])
 
 UPLOAD_DIR = "uploads"
 
@@ -29,14 +25,19 @@ async def upload_image(file: UploadFile = File(...)):
         "image_url": f"http://127.0.0.1:8000/uploads/{filename}"
     }
 
-@router.post("/products")
+
+# ================= CREATE PRODUCT =================
+@router.post("/")
 def create_product(
     product: ProductCreate,
-    token: str = Depends(oauth2_scheme),
+    current_user = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-    user_id = payload.get("user_id")
+    # only farmers are allowed to add their products 
+    print("USER TYPE:", current_user.user_type)
+    print("USER TYPE VALUE:", current_user.user_type.value)
+    if current_user.user_type.value != "farmer":
+        raise HTTPException(status_code=403, detail="Only farmers can add products")
 
     new_product = Product(
         name=product.name,
@@ -48,29 +49,33 @@ def create_product(
         available_time=product.available_time,
         description=product.description,
         image_url=product.image_url,
-        farmer_id=user_id
+        farmer_id=current_user.id
     )
 
     db.add(new_product)
     db.commit()
     db.refresh(new_product)
 
-    return {"message": "Product added successfully"}
+    return {
+        "message": "Product added successfully",
+        "product_id": new_product.id
+    }
 
-@router.get("/products")
+
+# ================= GET ALL PRODUCTS =================
+@router.get("/")
 def get_products(db: Session = Depends(get_db)):
-    products = db.query(Product).all()
+    return db.query(Product).all()
 
-    return products
 
-@router.get("/products/my")
+# ================= GET MY PRODUCTS =================
+@router.get("/my")
 def get_my_products(
-    token: str = Depends(oauth2_scheme),
+    current_user = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    user_id = payload.get("user_id")
-
-    products = db.query(Product).filter(Product.farmer_id == user_id).all()
+    products = db.query(Product).filter(
+        Product.farmer_id == current_user.id
+    ).all()
 
     return products
