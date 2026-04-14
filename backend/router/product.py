@@ -1,54 +1,62 @@
-from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
+import uuid
+import shutil
+from pathlib import Path
+from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, Form
 from sqlalchemy.orm import Session
+from typing import Optional
+from datetime import date, time
+
 from backend.db.database import get_db
 from backend.models.product import Product
-from backend.schemas.product import ProductCreate
+from backend.schemas.product import ProductResponse
 from backend.dependencies.auth import get_current_user
-import shutil, os, uuid
 
 router = APIRouter(prefix="/products", tags=["Products"])
 
-UPLOAD_DIR = "uploads"
-
-# ================= IMAGE UPLOAD =================
-@router.post("/upload-image")
-async def upload_image(file: UploadFile = File(...)):
-    os.makedirs(UPLOAD_DIR, exist_ok=True)
-
-    filename = f"{uuid.uuid4()}.{file.filename.split('.')[-1]}"
-    file_path = os.path.join(UPLOAD_DIR, filename)
-
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-
-    return {
-        "image_url": f"http://127.0.0.1:8000/uploads/{filename}"
-    }
+UPLOAD_DIR = Path("uploads")
+UPLOAD_DIR.mkdir(exist_ok=True)
 
 
-# ================= CREATE PRODUCT =================
-@router.post("/")
-def create_product(
-    product: ProductCreate,
-    current_user = Depends(get_current_user),
+# ✅ CREATE PRODUCT
+@router.post("/", response_model=ProductResponse)
+async def create_product(
+    name: str = Form(...),
+    village: str = Form(...),
+    phone: str = Form(...),
+    price: float = Form(...),
+    quantity: float = Form(...),
+    available_date: date = Form(...),
+    available_time: Optional[time] = Form(None),
+    description: Optional[str] = Form(None),
+    image: UploadFile = File(...),
+    current_user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    # only farmers are allowed to add their products 
-    print("USER TYPE:", current_user.user_type)
-    print("USER TYPE VALUE:", current_user.user_type.value)
-    if current_user.user_type.value != "farmer":
+    # Allow only farmers
+    if current_user.user_type != "farmer":
         raise HTTPException(status_code=403, detail="Only farmers can add products")
 
+    # ✅ Save image
+    file_ext = image.filename.split(".")[-1]
+    filename = f"{uuid.uuid4()}.{file_ext}"
+    file_path = UPLOAD_DIR / filename
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(image.file, buffer)
+
+    image_url = f"http://127.0.0.1:8000/uploads/{filename}"
+
+    # ✅ SAVE IMAGE URL IN DATABASE (MAIN FIX)
     new_product = Product(
-        name=product.name,
-        village=product.village,
-        phone=product.phone,
-        price=product.price,
-        quantity=product.quantity,
-        available_date=product.available_date,
-        available_time=product.available_time,
-        description=product.description,
-        image_url=product.image_url,
+        name=name,
+        village=village,
+        phone=phone,
+        price=price,
+        quantity=quantity,
+        available_date=available_date,
+        available_time=available_time,
+        description=description,
+        image_url=image_url,   # ✅ IMPORTANT LINE
         farmer_id=current_user.id
     )
 
@@ -56,26 +64,51 @@ def create_product(
     db.commit()
     db.refresh(new_product)
 
-    return {
-        "message": "Product added successfully",
-        "product_id": new_product.id
-    }
+    return new_product
 
 
-# ================= GET ALL PRODUCTS =================
-@router.get("/")
+# ✅ GET ALL PRODUCTS
+@router.get("/", response_model=list[ProductResponse])
 def get_products(db: Session = Depends(get_db)):
     return db.query(Product).all()
 
 
-# ================= GET MY PRODUCTS =================
-@router.get("/my")
+# ✅ GET MY PRODUCTS
+@router.get("/my", response_model=list[ProductResponse])
 def get_my_products(
-    current_user = Depends(get_current_user),
+    current_user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    products = db.query(Product).filter(
-        Product.farmer_id == current_user.id
-    ).all()
+    return db.query(Product).filter(Product.farmer_id == current_user.id).all()
 
-    return products
+
+# ✅ GET SINGLE PRODUCT
+@router.get("/{product_id}", response_model=ProductResponse)
+def get_product(product_id: int, db: Session = Depends(get_db)):
+    product = db.query(Product).filter(Product.id == product_id).first()
+
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    return product
+
+
+# ✅ DELETE PRODUCT
+@router.delete("/{product_id}")
+def delete_product(
+    product_id: int,
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    product = db.query(Product).filter(Product.id == product_id).first()
+
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    if product.farmer_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not allowed")
+
+    db.delete(product)
+    db.commit()
+
+    return {"message": "Deleted successfully"}

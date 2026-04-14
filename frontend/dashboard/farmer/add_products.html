@@ -1,196 +1,150 @@
 <!DOCTYPE html>
-<html lang="mr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>नवीन उत्पादन जोडा - KisaanConnect</title>
+  <title>Add Product - KisaanConnect</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="../../js/api.js"></script>
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
     body { font-family: 'Poppins', sans-serif; }
-    .input-field {
-      transition: all 0.3s ease;
-    }
-    .input-field:focus {
-      border-color: #166534;
-      box-shadow: 0 0 0 4px rgba(22, 101, 52, 0.15);
-    }
   </style>
 </head>
-<body class="bg-[#f8f9f5] min-h-screen pb-20">
 
-  <!-- Navbar -->
-  <nav class="bg-white shadow-sm border-b sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <i class="fas fa-seedling text-3xl text-emerald-600"></i>
-        <div class="font-bold text-2xl">
-          <span class="text-emerald-700">Kisaan</span><span class="text-emerald-600">Connect</span>
-        </div>
-      </div>
-      <div class="flex items-center gap-4">
-        <a href="my_products.html" class="text-emerald-700 font-medium">माझी उत्पादने</a>
-        <a href="index.html" class="text-emerald-700 font-medium">Dashboard</a>
-      </div>
-    </div>
-  </nav>
+<body class="bg-[#f8f9f5] min-h-screen">
 
-  <div class="max-w-2xl mx-auto px-5 py-8">
+<!-- Navbar -->
+<nav class="bg-white shadow-sm border-b">
+  <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between">
+    <h1 class="text-xl font-bold text-emerald-700">KisaanConnect</h1>
 
-    <!-- Header -->
-    <div class="flex items-center gap-4 mb-10">
-      <div class="w-12 h-12 bg-emerald-100 rounded-3xl flex items-center justify-center flex-shrink-0">
-        <i class="fas fa-plus text-3xl text-emerald-600"></i>
-      </div>
-      <div>
-        <h1 class="text-3xl font-bold text-emerald-800">नवीन उत्पादन जोडा</h1>
-        <p class="text-gray-600">खरेदीदारांना तुमचा ताजा माल दाखवा</p>
-      </div>
-    </div>
-
-    <div class="bg-white rounded-3xl shadow-xl p-8">
-
-      <form id="product-form" onsubmit="handleSubmit(event)">
-
-        <!-- Product Image -->
-        <div class="mb-8">
-          <label class="block text-sm font-medium text-gray-700 mb-3">उत्पादनाची फोटो</label>
-          <div id="image-upload-area" 
-               class="border-2 border-dashed border-gray-300 rounded-3xl p-10 text-center hover:border-emerald-500 transition-all cursor-pointer">
-            <input type="file" id="product-image" accept="image/*" class="hidden" onchange="previewImage(event)"/>
-            <i class="fas fa-camera text-5xl text-emerald-400 mb-4"></i>
-            <p class="font-medium text-gray-600">फोटो निवडा किंवा कॅप्चर करा</p>
-            <p class="text-xs text-gray-500 mt-1">JPEG किंवा PNG</p>
-          </div>
-          
-          <div id="image-preview" class="hidden mt-6">
-            <img id="preview-img" class="w-full rounded-3xl shadow-md" alt="Product Preview"/>
-            <button type="button" onclick="removeImage()" 
-              class="mt-3 text-red-600 text-sm font-medium flex items-center gap-2">
-              <i class="fas fa-trash"></i> फोटो काढून टाका
-            </button>
-          </div>
-        </div>
-
-        <!-- Product Name -->
-        <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-700 mb-2">उत्पादनाचे नाव</label>
-          <input type="text" id="product-name" 
-            class="input-field w-full px-6 py-5 border border-gray-300 rounded-3xl text-lg"
-            placeholder="उदा. ताजे टोमॅटो" required />
-        </div>
-
-        <div class="grid grid-cols-2 gap-6 mb-6">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">गाव (Village)</label>
-            <input type="text" id="village" 
-              class="input-field w-full px-6 py-5 border border-gray-300 rounded-3xl text-lg"
-              placeholder="तुमचे गाव" required />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">मोबाईल नंबर</label>
-            <input type="tel" id="phone" 
-              class="input-field w-full px-6 py-5 border border-gray-300 rounded-3xl text-lg bg-gray-50"
-              readonly />
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-6 mb-6">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">किंमत (₹ प्रति किलो)</label>
-            <input type="number" id="price" step="1" min="1"
-              class="input-field w-full px-6 py-5 border border-gray-300 rounded-3xl text-lg"
-              placeholder="उदा. 25" required />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">मात्रा (किलो)</label>
-            <input type="number" id="quantity" min="1"
-              class="input-field w-full px-6 py-5 border border-gray-300 rounded-3xl text-lg"
-              placeholder="उदा. 50" required />
-          </div>
-        </div>
-
-        <!-- Available Till Date & Time -->
-        <div class="mb-8">
-          <label class="block text-sm font-medium text-gray-700 mb-3">उपलब्धता कधीपर्यंत?</label>
-          <div class="grid grid-cols-2 gap-6">
-            <div>
-              <label class="block text-xs text-gray-500 mb-1">तारीख (Date)</label>
-              <input type="date" id="available-date"
-                class="input-field w-full px-6 py-5 border border-gray-300 rounded-3xl text-lg" required />
-            </div>
-            <div>
-              <label class="block text-xs text-gray-500 mb-1">वेळ (Time)</label>
-              <input type="time" id="available-time"
-                class="input-field w-full px-6 py-5 border border-gray-300 rounded-3xl text-lg" required />
-            </div>
-          </div>
-        </div>
-
-        <div class="mb-8">
-          <label class="block text-sm font-medium text-gray-700 mb-2">अधिक माहिती (Optional)</label>
-          <textarea id="description" rows="3"
-            class="input-field w-full px-6 py-5 border border-gray-300 rounded-3xl text-lg resize-y"
-            placeholder="उत्पादनाबद्दल थोडी माहिती..."></textarea>
-        </div>
-
-        <!-- Publish Button -->
-        <button type="submit" id="publish-btn"
-          class="w-full bg-emerald-600 hover:bg-emerald-700 transition-all text-white font-semibold text-xl py-6 rounded-3xl flex items-center justify-center gap-3 shadow-lg">
-          <i class="fas fa-paper-plane"></i>
-          <span>उत्पादन प्रकाशित करा</span>
-        </button>
-      </form>
+    <div class="flex gap-4">
+      <a href="index.html" class="text-emerald-600">Dashboard</a>
+      <a href="my_products.html" class="text-emerald-600">My Products</a>
     </div>
   </div>
+</nav>
 
-  <script>
-async function handleSubmit(e) {
+<div class="max-w-3xl mx-auto mt-10 bg-white p-8 rounded-3xl shadow">
+
+  <h2 class="text-2xl font-bold text-emerald-700 mb-6">
+    Add New Product
+  </h2>
+
+  <form id="product-form">
+
+    <!-- Image -->
+    <div class="mb-6">
+      <label class="block mb-2">Product Image</label>
+      <input type="file" id="image" accept="image/*" onchange="previewImage(event)">
+      <img id="preview" class="mt-4 rounded-xl hidden w-full h-60 object-cover"/>
+    </div>
+
+    <!-- Name -->
+    <div class="mb-4">
+      <label>Name</label>
+      <input type="text" id="name" required
+        class="w-full p-3 border rounded-xl"/>
+    </div>
+
+    <!-- Price -->
+    <div class="mb-4">
+      <label>Price (₹/kg)</label>
+      <input type="number" id="price" required
+        class="w-full p-3 border rounded-xl"/>
+    </div>
+
+    <!-- Quantity -->
+    <div class="mb-4">
+      <label>Quantity (kg)</label>
+      <input type="number" id="quantity" required
+        class="w-full p-3 border rounded-xl"/>
+    </div>
+
+    <!-- Village -->
+    <div class="mb-4">
+      <label>Village</label>
+      <input type="text" id="village" required
+        class="w-full p-3 border rounded-xl"/>
+    </div>
+
+    <!-- Phone -->
+    <div class="mb-4">
+      <label>Phone</label>
+      <input type="text" id="phone" required
+        class="w-full p-3 border rounded-xl"/>
+    </div>
+
+    <!-- Description -->
+    <div class="mb-6">
+      <label>Description</label>
+      <textarea id="description"
+        class="w-full p-3 border rounded-xl"></textarea>
+    </div>
+
+    <!-- Submit -->
+    <button type="submit"
+      class="w-full bg-emerald-600 text-white py-3 rounded-xl hover:bg-emerald-700">
+      Add Product
+    </button>
+
+  </form>
+
+</div>
+
+<script>
+let imageData = "";
+
+// Preview Image
+function previewImage(event) {
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    imageData = e.target.result;
+    const preview = document.getElementById("preview");
+    preview.src = imageData;
+    preview.classList.remove("hidden");
+  };
+  reader.readAsDataURL(file);
+}
+
+// Submit
+document.getElementById("product-form").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const token = localStorage.getItem("access_token");
-
-  const publishBtn = document.getElementById('publish-btn');
-  publishBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> प्रकाशित होत आहे...`;
-  publishBtn.disabled = true;
-
   const productData = {
-    name: document.getElementById('product-name').value.trim(),
-    village: document.getElementById('village').value.trim(),
-    phone: document.getElementById('phone').value.trim(),
-    price: parseFloat(document.getElementById('price').value),
-    quantity: parseFloat(document.getElementById('quantity').value),
-    available_date: document.getElementById('available-date').value,
-    available_time: document.getElementById('available-time').value,
-    description: document.getElementById('description').value.trim(),
-    image_url: currentImageData || 'https://picsum.photos/id/201/600/400'
+    name: document.getElementById("name").value,
+    price: parseFloat(document.getElementById("price").value),
+    quantity: parseFloat(document.getElementById("quantity").value),
+    village: document.getElementById("village").value,
+    phone: document.getElementById("phone").value,
+    description: document.getElementById("description").value,
+    image_url: imageData || "https://picsum.photos/400"
   };
 
-  try {
-    const res = await fetch("http://127.0.0.1:8000/products", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify(productData)
-    });
+  const result = await API.createProduct(productData);
 
-    if (res.ok) {
-      alert("✅ उत्पादन यशस्वीरित्या जोडले गेले!");
-
-      // Redirect to marketplace
-      window.location.href = "/marketplace.html";
-    } else {
-      alert("❌ उत्पादन जोडण्यात अयशस्वी");
-    }
-
-  } catch (err) {
-    console.error(err);
-    alert("❌ Server error");
+  if (result.success) {
+    alert("Product added successfully");
+    window.location.href = "my_products.html";
+  } else {
+    alert("Failed to add product");
   }
-}
+});
+
+// Protect page
+document.addEventListener("DOMContentLoaded", () => {
+  if (!API.isLoggedIn()) {
+    window.location.href = "/login.html";
+  }
+});
 </script>
+
 </body>
 </html>

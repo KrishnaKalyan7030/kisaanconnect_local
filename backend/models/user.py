@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy import Enum as SQLEnum
+from sqlalchemy.orm import relationship
 from backend.db.database import Base
 import enum
 
@@ -24,3 +25,4 @@ class User(Base):
         SQLEnum(UserType, name="usertype", create_type=False), 
         nullable=False
     )
+

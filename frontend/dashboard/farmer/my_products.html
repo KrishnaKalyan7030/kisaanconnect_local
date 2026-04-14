@@ -4,209 +4,181 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>माझी उत्पादने - KisaanConnect</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
     body { font-family: 'Poppins', sans-serif; }
     .product-card {
-      transition: all 0.4s ease;
+      transition: all 0.3s ease;
     }
     .product-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 30px 60px -15px rgb(0 0 0 / 0.2);
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
     }
   </style>
 </head>
+
 <body class="bg-[#f8f9f5] min-h-screen pb-20">
 
-  <!-- Navbar -->
-  <nav class="bg-white shadow-sm border-b sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <i class="fas fa-seedling text-3xl text-emerald-600"></i>
-        <div class="font-bold text-2xl">
-          <span class="text-emerald-700">Kisaan</span><span class="text-emerald-600">Connect</span>
-        </div>
-      </div>
-      
-      <div class="flex items-center gap-4">
-        <a href="add-product.html" 
-           class="flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-3xl hover:bg-emerald-700 font-medium">
-          <i class="fas fa-plus"></i> 
-          <span class="hidden sm:inline">नवीन उत्पादन जोडा</span>
-        </a>
-        <a href="index.html" 
-           class="flex items-center gap-2 text-emerald-700 font-medium hover:text-emerald-800">
-          <i class="fas fa-home"></i> Dashboard
-        </a>
-      </div>
-    </div>
-  </nav>
+<!-- Navbar -->
+<nav class="bg-white shadow-sm border-b sticky top-0 z-50">
+  <div class="max-w-6xl mx-auto px-5 py-4 flex justify-between items-center">
 
-  <div class="max-w-6xl mx-auto px-5 py-8">
-
-    <!-- Header -->
-    <div class="mb-10">
-      <h1 class="text-4xl font-bold text-emerald-800">माझी उत्पादने</h1>
-      <p class="text-gray-600 mt-2 text-lg">तुम्ही जोडलेली सर्व उत्पादने येथे दिसतील</p>
+    <div class="flex items-center gap-3">
+      <i class="fas fa-seedling text-3xl text-emerald-600"></i>
+      <h1 class="text-2xl font-bold text-emerald-700">KisaanConnect</h1>
     </div>
 
-    <!-- Filter -->
-    <div class="flex justify-end mb-8">
-      <select id="status-filter" onchange="filterProducts()" 
-        class="px-6 py-3 border border-gray-300 rounded-3xl focus:outline-none focus:border-emerald-600 bg-white text-base">
-        <option value="all">सर्व उत्पादने</option>
-        <option value="active">सक्रिय उत्पादने</option>
-      </select>
-    </div>
+    <div class="flex gap-4">
+      <a href="add-product.html"
+        class="bg-emerald-600 text-white px-5 py-2 rounded-3xl hover:bg-emerald-700">
+        + Add Product
+      </a>
 
-    <!-- Products Grid (Attractive Cards) -->
-    <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      <!-- Populated by JavaScript -->
-    </div>
-
-    <!-- Empty State -->
-    <div id="empty-state" class="hidden text-center py-20">
-      <div class="mx-auto w-32 h-32 bg-emerald-100 rounded-full flex items-center justify-center mb-6">
-        <i class="fas fa-box-open text-7xl text-emerald-300"></i>
-      </div>
-      <h3 class="text-3xl font-semibold text-gray-700">अजून कोणतेही उत्पादन जोडले नाही</h3>
-      <p class="text-gray-500 mt-4 max-w-md mx-auto">तुमच्या शेतातील ताज्या मालाची यादी करा आणि खरेदीदारांना थेट संपर्क साधण्याची संधी द्या</p>
-      <a href="add-product.html" 
-        class="inline-block mt-10 bg-emerald-600 text-white px-12 py-5 rounded-3xl font-semibold text-xl hover:bg-emerald-700">
-        पहिले उत्पादन जोडा
+      <a href="index.html"
+        class="text-emerald-700 font-medium">
+        Dashboard
       </a>
     </div>
+
+  </div>
+</nav>
+
+<div class="max-w-6xl mx-auto px-5 py-8">
+
+  <!-- Title -->
+  <h1 class="text-3xl font-bold text-emerald-800 mb-8">
+    माझी उत्पादने
+  </h1>
+
+  <!-- Grid -->
+  <div id="products-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+  <!-- Empty -->
+  <div id="empty" class="hidden text-center mt-20">
+    <i class="fas fa-box text-6xl text-gray-300"></i>
+    <p class="text-gray-500 mt-4">No products found</p>
   </div>
 
-  <script>
-    let allProducts = [];
+</div>
 
-    function getCurrentUser() {
-      return JSON.parse(sessionStorage.getItem('currentUser') || localStorage.getItem('currentUser') || '{}');
-    }
+<script>
+const BASE_URL = "http://127.0.0.1:8000";
 
-    function loadProducts() {
-      allProducts = JSON.parse(localStorage.getItem('farmerProducts')) || [];
-      renderProducts(allProducts);
-    }
+let allProducts = [];
 
-    function renderProducts(products) {
-      const container = document.getElementById('products-grid');
-      container.innerHTML = '';
+// Get token
+function getToken() {
+  return localStorage.getItem("access_token");
+}
 
-      if (products.length === 0) {
-        document.getElementById('empty-state').classList.remove('hidden');
-        return;
+// Load products from backend
+async function loadProducts() {
+  try {
+    const res = await fetch(`${BASE_URL}/products/my`, {
+      headers: {
+        "Authorization": `Bearer ${getToken()}`
       }
-
-      document.getElementById('empty-state').classList.add('hidden');
-
-      products.forEach(product => {
-        const isActive = !product.available_till || new Date(product.available_till) > new Date();
-
-        const availableText = product.available_till_time 
-          ? `${product.available_till} ${product.available_till_time}` 
-          : product.available_till || '—';
-
-        const cardHTML = `
-          <div class="product-card bg-white rounded-3xl overflow-hidden shadow border border-gray-100">
-            
-            <!-- Image -->
-            <div class="relative h-56">
-              <img src="${product.image_url || 'https://picsum.photos/id/201/600/400'}" 
-                   class="w-full h-full object-cover" alt="${product.name}"/>
-              <span class="absolute top-4 right-4 px-5 py-1.5 text-xs font-bold rounded-3xl ${isActive ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}">
-                ${isActive ? 'सक्रिय' : 'कालबाह्य'}
-              </span>
-            </div>
-
-            <!-- Content -->
-            <div class="p-6">
-              <h3 class="text-2xl font-bold text-gray-800 leading-tight">${product.name}</h3>
-              <p class="text-emerald-600 text-3xl font-semibold mt-3">₹${product.price}/kg</p>
-
-              <div class="mt-6 space-y-4 text-base">
-                <div class="flex justify-between">
-                  <span class="text-gray-500">गाव</span>
-                  <span class="font-medium">${product.village || '—'}</span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-gray-500">मोबाईल</span>
-                  <span class="font-medium">${product.mobile || '—'}</span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-gray-500">मात्रा</span>
-                  <span class="font-medium">${product.quantity} kg</span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-gray-500">उपलब्धता</span>
-                  <span class="font-medium">${availableText}</span>
-                </div>
-              </div>
-
-              ${product.description ? `
-              <div class="mt-6 pt-5 border-t border-gray-100">
-                <p class="text-gray-500 text-sm">वर्णन</p>
-                <p class="text-gray-700 text-base mt-1 line-clamp-2">${product.description}</p>
-              </div>` : ''}
-
-              <!-- Action Buttons -->
-              <div class="grid grid-cols-2 gap-4 mt-10">
-                <button onclick="editProduct(${product.id})" 
-                  class="bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-3xl font-semibold flex items-center justify-center gap-2 transition">
-                  <i class="fas fa-edit"></i> संपादित करा
-                </button>
-                <button onclick="deleteProduct(${product.id})" 
-                  class="bg-red-100 hover:bg-red-200 text-red-700 py-4 rounded-3xl font-semibold flex items-center justify-center gap-2 transition">
-                  <i class="fas fa-trash"></i> काढून टाका
-                </button>
-              </div>
-            </div>
-          </div>
-        `;
-
-        container.innerHTML += cardHTML;
-      });
-    }
-
-    function filterProducts() {
-      const filter = document.getElementById('status-filter').value;
-      let filtered = allProducts;
-
-      if (filter === 'active') {
-        filtered = allProducts.filter(p => !p.available_till || new Date(p.available_till) > new Date());
-      }
-
-      renderProducts(filtered);
-    }
-
-    function deleteProduct(productId) {
-      if (!confirm("हे उत्पादन खरोखर काढून टाकायचे आहे?")) return;
-
-      let products = JSON.parse(localStorage.getItem('farmerProducts')) || [];
-      products = products.filter(p => p.id !== productId);
-      localStorage.setItem('farmerProducts', JSON.stringify(products));
-
-      loadProducts();
-      alert("उत्पादन यशस्वीरित्या काढून टाकले गेले");
-    }
-
-    function editProduct(productId) {
-      window.location.href = `add-product.html?id=${productId}`;
-    }
-
-    // Initialize
-    document.addEventListener('DOMContentLoaded', () => {
-      const user = getCurrentUser();
-      if (!user || user.role !== 'farmer') {
-        window.location.href = "../../login.html";
-        return;
-      }
-
-      loadProducts();
     });
-  </script>
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.detail || "Failed");
+    }
+
+    allProducts = data;
+    renderProducts();
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to load products");
+  }
+}
+
+//  Render
+function renderProducts() {
+  const grid = document.getElementById("products-grid");
+  grid.innerHTML = "";
+
+  if (allProducts.length === 0) {
+    document.getElementById("empty").classList.remove("hidden");
+    return;
+  }
+
+  document.getElementById("empty").classList.add("hidden");
+
+  allProducts.forEach(product => {
+
+    const card = document.createElement("div");
+    card.className = "product-card bg-white rounded-3xl overflow-hidden";
+
+    card.innerHTML = `
+      <img src="${product.image_url || 'https://picsum.photos/400'}"
+        class="h-52 w-full object-cover"/>
+
+      <div class="p-5">
+        <h2 class="text-xl font-semibold">${product.name}</h2>
+        <p class="text-emerald-600 text-2xl font-bold mt-2">
+          ₹${product.price}/kg
+        </p>
+
+        <p class="text-sm text-gray-500 mt-2">
+          Qty: ${product.quantity} kg
+        </p>
+
+        <div class="flex gap-3 mt-5">
+
+          <button onclick="deleteProduct(${product.id})"
+            class="flex-1 bg-red-100 text-red-600 py-2 rounded-xl">
+            Delete
+          </button>
+
+        </div>
+      </div>
+    `;
+
+    grid.appendChild(card);
+  });
+}
+
+//  Delete
+async function deleteProduct(id) {
+  if (!confirm("Delete this product?")) return;
+
+  try {
+    const res = await fetch(`${BASE_URL}/products/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${getToken()}`
+      }
+    });
+
+    if (!res.ok) throw new Error();
+
+    alert("Deleted successfully");
+    loadProducts();
+
+  } catch {
+    alert("Delete failed");
+  }
+}
+
+// ✅ Protect page
+document.addEventListener("DOMContentLoaded", () => {
+  const token = getToken();
+  const role = localStorage.getItem("user_type");
+
+  if (!token || role !== "farmer") {
+    window.location.href = "/login.html";
+    return;
+  }
+
+  loadProducts();
+});
+</script>
+
 </body>
 </html>

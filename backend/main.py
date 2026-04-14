@@ -12,7 +12,10 @@ from backend.router.auth import router as auth_router
 from backend.router.product import router as product_router
 from backend.core.config import settings
 import os
-os.makedirs("uploads", exist_ok=True)  
+from fastapi.staticfiles import StaticFiles
+
+
+# os.makedirs("uploads", exist_ok=True)  
 
 
 # Create all database tables when the app starts
@@ -29,7 +32,7 @@ app = FastAPI(
 # Enable CORS so frontend can call backend (important for development)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],        # Change to specific domain in production
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -45,7 +48,7 @@ app.mount("/js", StaticFiles(directory="frontend/js"), name="js")
 app.mount("/css", StaticFiles(directory="frontend/css"), name="css")
 app.mount("/assets", StaticFiles(directory="frontend/assets"), name="assets")
 
-app.mount('/uploads',StaticFiles(directory='uploads'),name='uploads')
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 
 @app.get("/api/hello")

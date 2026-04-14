@@ -143,10 +143,10 @@
 
   <!-- Toast Container -->
   <div id="toast-container" class="fixed bottom-6 right-6 space-y-3 z-50"></div>
-<script>
-// Role selection
+  <script>
 let selectedRole = null;
 
+// ================= ROLE =================
 function selectRole(btn) {
   document.querySelectorAll('.role-btn').forEach(b => {
     b.classList.remove('border-emerald-600', 'bg-emerald-50');
@@ -155,31 +155,14 @@ function selectRole(btn) {
   selectedRole = btn.getAttribute('data-role');
 }
 
-// Toast notification
-function showToast(message, type = 'success') {
-  const container = document.getElementById('toast-container');
-  const toast = document.createElement('div');
-  
-  toast.className = `px-6 py-4 rounded-2xl shadow-xl flex items-center gap-3 text-white ${
-    type === 'success' ? 'bg-emerald-600' : 'bg-red-600'
-  }`;
-  
-  toast.innerHTML = `
-    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} text-xl"></i>
-    <span class="font-medium">${message}</span>
-  `;
-  
-  container.appendChild(toast);
-
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    setTimeout(() => toast.remove(), 300);
-  }, 4000);
+// ================= TOAST =================
+function showToast(msg, type = "success") {
+  alert(msg); // simple for now
 }
 
-// Main registration handler
-async function handleRegister(event) {
-  event.preventDefault();
+// ================= REGISTER =================
+async function handleRegister(e) {
+  e.preventDefault();
 
   const full_name = document.getElementById('name').value.trim();
   const email = document.getElementById('email').value.trim();
@@ -190,73 +173,51 @@ async function handleRegister(event) {
   const district = document.getElementById('district').value.trim();
 
   if (!selectedRole) {
-    showToast('Please select your role (Farmer or Buyer)', 'error');
+    showToast("Select Farmer or Buyer", "error");
     return;
   }
 
   if (password !== confirm_password) {
-    showToast('Passwords do not match!', 'error');
+    showToast("Passwords do not match", "error");
     return;
   }
 
-  if (password.length < 6) {
-    showToast('Password must be at least 6 characters', 'error');
-    return;
-  }
-
-  const formData = {
-    full_name: full_name,
-    email: email,
-    phone: phone,
-    village: village,
-    district: district,
-    state: "Maharashtra",
-    password: password,
-    confirm_password: confirm_password,
+  const userData = {
+    full_name,
+    email,
+    phone,
+    village,
+    district,
+    state: "Gujarat",   // change if needed
+    password,
+    confirm_password,
     user_type: selectedRole
   };
 
-  const registerBtn = document.getElementById('register-btn');
-  const originalText = registerBtn.innerHTML;
+  const btn = document.getElementById("register-btn");
+  btn.disabled = true;
+  btn.innerText = "Creating...";
 
-  registerBtn.disabled = true;
-  registerBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Creating Account...`;
+  // 🔥 USE API.JS HERE
+  const result = await window.API.register(userData);
 
-  try {
-    const response = await fetch('http://127.0.0.1:8000/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
-    });
+  if (result.success) {
+    showToast("Registration successful");
 
-    const data = await response.json();
+    setTimeout(() => {
+      window.location.href = "login.html";
+    }, 1000);
 
-    if (response.ok) {
-      showToast('✅ Account created successfully!', 'success');
-  
-
-      // Better redirect with delay + full path
-      setTimeout(() => {
-        window.location.href = '/login.html';           // Try relative path first
-        // Alternative (uncomment if above doesn't work):
-        // window.location.replace('login.html');
-        // absolute: window.location.href = 'login.html';
-      }, 1500);
-    } else {
-      const errorMsg = data.detail?.[0]?.msg || data.detail || 'Registration failed';
-      showToast(errorMsg, 'error');
-    }
-  } catch (error) {
-    console.error(error);
-    showToast('Network error. Please try again.', 'error');
-  } finally {
-    registerBtn.disabled = false;
-    registerBtn.innerHTML = originalText;
+  } else {
+    showToast(result.data?.detail || "Registration failed", "error");
   }
+
+  btn.disabled = false;
+  btn.innerText = "Create Account";
 }
 
-// Attach the form
-document.getElementById('register-form').addEventListener('submit', handleRegister);
+// attach
+document.getElementById("register-form").addEventListener("submit", handleRegister);
 </script>
 </body>
 </html>

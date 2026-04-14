@@ -11,8 +11,9 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     """Dependency to get the currently logged-in user"""
-    
+    print("TOken:",token)
     payload = decode_access_token(token)
+    
     if payload is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -30,3 +31,6 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         )
     
     return user
+
+
+
