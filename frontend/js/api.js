@@ -10,8 +10,12 @@ function getToken() {
 }
 
 function getAuthHeaders() {
+    const token = getToken();
+    if (!token) {
+        console.warn("Warning: No access token found!");
+    }
     return {
-        "Authorization": "Bearer " + getToken(),
+        "Authorization": "Bearer " + (token || ""),
         "Content-Type": "application/json"
     };
 }
@@ -111,24 +115,48 @@ window.API = {
         }
     },
 
-    // ================= CREATE PRODUCT =================
-    async createProduct(productData) {
-        try {
-            const res = await fetch(`${BASE_URL}/products`, {
-                method: "POST",
-                headers: getAuthHeaders(),
-                body: JSON.stringify(productData)   
-            });
-
-            const data = await res.json();
-
-            return { success: res.ok, data };
-
-        } catch {
-            return { success: false };
+    // ================= CREATE PRODUCT - FIXED & IMPROVED =================
+  // ================= CREATE PRODUCT - FIXED FOR MULTIPART =================
+async createProduct(formData) {   // Now accepts FormData object, not JSON
+    try {
+        const token = getToken();
+        if (!token) {
+            return { success: false, message: "You are not logged in. Please login again." };
         }
-    },
 
+        console.log("📤 Sending multipart form data...");
+
+        const res = await fetch(`${BASE_URL}/products/`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`
+                // Do NOT set Content-Type → browser sets correct multipart boundary
+            },
+            body: formData
+        });
+
+        let data = {};
+        try {
+            data = await res.json();
+        } catch (e) {}
+
+        console.log(`Response Status: ${res.status}`, data);
+
+        if (res.ok) {
+            console.log("✅ Product created successfully!");
+            return { success: true, data };
+        }
+
+        return {
+            success: false,
+            message: data.detail || data.message || `Error ${res.status}`
+        };
+
+    } catch (err) {
+        console.error("❌ Network Error:", err);
+        return { success: false, message: "Network error. Check console (F12)." };
+    }
+},
     // ================= DELETE PRODUCT =================
     async deleteProduct(id) {
         try {
@@ -155,8 +183,7 @@ window.API = {
         return !!getToken();
     },
 
-    // ================= TOAST =================
-    showToast(message, type = "success") {
+    showToast(message) {
         alert(message);
     }
 };

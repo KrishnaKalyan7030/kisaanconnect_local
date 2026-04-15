@@ -38,56 +38,71 @@
 
     <!-- Image -->
     <div class="mb-6">
-      <label class="block mb-2">Product Image</label>
-      <input type="file" id="image" accept="image/*" onchange="previewImage(event)">
-      <img id="preview" class="mt-4 rounded-xl hidden w-full h-60 object-cover"/>
+      <label class="block mb-2 font-medium text-gray-700">Product Image <span class="text-red-500">*</span></label>
+      <input type="file" id="image" accept="image/*" onchange="previewImage(event)" required
+        class="w-full p-3 border border-gray-300 rounded-xl file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100"/>
+      <img id="preview" class="mt-4 rounded-xl hidden w-full h-60 object-cover border"/>
     </div>
 
     <!-- Name -->
     <div class="mb-4">
-      <label>Name</label>
+      <label class="block mb-2 font-medium text-gray-700">Name <span class="text-red-500">*</span></label>
       <input type="text" id="name" required
-        class="w-full p-3 border rounded-xl"/>
+        class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:border-emerald-500"/>
     </div>
 
     <!-- Price -->
     <div class="mb-4">
-      <label>Price (₹/kg)</label>
-      <input type="number" id="price" required
-        class="w-full p-3 border rounded-xl"/>
+      <label class="block mb-2 font-medium text-gray-700">Price (₹/kg) <span class="text-red-500">*</span></label>
+      <input type="number" id="price" step="0.01" min="0" required
+        class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:border-emerald-500"/>
     </div>
 
     <!-- Quantity -->
     <div class="mb-4">
-      <label>Quantity (kg)</label>
-      <input type="number" id="quantity" required
-        class="w-full p-3 border rounded-xl"/>
+      <label class="block mb-2 font-medium text-gray-700">Quantity (kg) <span class="text-red-500">*</span></label>
+      <input type="number" id="quantity" min="0" required
+        class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:border-emerald-500"/>
     </div>
 
     <!-- Village -->
     <div class="mb-4">
-      <label>Village</label>
+      <label class="block mb-2 font-medium text-gray-700">Village <span class="text-red-500">*</span></label>
       <input type="text" id="village" required
-        class="w-full p-3 border rounded-xl"/>
+        class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:border-emerald-500"/>
     </div>
 
     <!-- Phone -->
     <div class="mb-4">
-      <label>Phone</label>
+      <label class="block mb-2 font-medium text-gray-700">Phone <span class="text-red-500">*</span></label>
       <input type="text" id="phone" required
-        class="w-full p-3 border rounded-xl"/>
+        class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:border-emerald-500"/>
+    </div>
+
+    <!-- Available Date -->
+    <div class="mb-4">
+      <label class="block mb-2 font-medium text-gray-700">Available Date <span class="text-red-500">*</span></label>
+      <input type="date" id="available_date" required
+        class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:border-emerald-500"/>
+    </div>
+
+    <!-- Available Time -->
+    <div class="mb-4">
+      <label class="block mb-2 font-medium text-gray-700">Available Time <span class="text-red-500">*</span></label>
+      <input type="time" id="available_time" required
+        class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:border-emerald-500"/>
     </div>
 
     <!-- Description -->
     <div class="mb-6">
-      <label>Description</label>
-      <textarea id="description"
-        class="w-full p-3 border rounded-xl"></textarea>
+      <label class="block mb-2 font-medium text-gray-700">Description</label>
+      <textarea id="description" rows="4"
+        class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:border-emerald-500"></textarea>
     </div>
 
     <!-- Submit -->
     <button type="submit"
-      class="w-full bg-emerald-600 text-white py-3 rounded-xl hover:bg-emerald-700">
+      class="w-full bg-emerald-600 text-white py-3 rounded-xl hover:bg-emerald-700 font-medium transition">
       Add Product
     </button>
 
@@ -95,7 +110,7 @@
 
 </div>
 
-<script>
+<!-- <script>
 let imageData = "";
 
 // Preview Image
@@ -144,7 +159,70 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "/login.html";
   }
 });
+</script> -->
+<script>
+  // Preview Image (keep this as it is)
+function previewImage(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const preview = document.getElementById("preview");
+    preview.src = e.target.result;
+    preview.classList.remove("hidden");
+  };
+  reader.readAsDataURL(file);
+}
+
+// Submit Handler - Updated for multipart/form-data
+document.getElementById("product-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const submitBtn = e.target.querySelector("button[type='submit']");
+  const originalText = submitBtn.textContent;
+  submitBtn.textContent = "Adding Product...";
+  submitBtn.disabled = true;
+
+  const formData = new FormData();
+
+  // Required fields from Swagger
+  formData.append("name", document.getElementById("name").value.trim());
+  formData.append("village", document.getElementById("village").value.trim());
+  formData.append("phone", document.getElementById("phone").value.trim());
+  formData.append("price", document.getElementById("price").value);
+  formData.append("quantity", document.getElementById("quantity").value);
+  formData.append("available_date", document.getElementById("available_date").value);
+  formData.append("available_time", document.getElementById("available_time").value);
+  formData.append("description", document.getElementById("description").value.trim() || "");
+
+  // Image file
+  const imageFile = document.getElementById("image").files[0];
+  if (!imageFile) {
+    alert("Please select a product image");
+    submitBtn.textContent = originalText;
+    submitBtn.disabled = false;
+    return;
+  }
+  formData.append("image", imageFile);
+
+  // Call API
+  const result = await API.createProduct(formData);
+
+  // Reset button
+  submitBtn.textContent = originalText;
+  submitBtn.disabled = false;
+
+  if (result.success) {
+    alert("✅ Product added successfully!");
+    window.location.href = "my_products.html";
+  } else {
+    alert("❌ " + (result.message || "Failed to add product. Please check console."));
+    console.error("Add Product Error:", result);
+  }
+});
 </script>
+
 
 </body>
 </html>

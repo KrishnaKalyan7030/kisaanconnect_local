@@ -28,6 +28,8 @@
 <!-- NAVBAR -->
 <nav class="bg-white shadow p-4 flex justify-between items-center">
   <h1 class="text-xl font-bold text-emerald-700">KisaanConnect</h1>
+  
+   <a href="index.html" class="text-gray-700 hover:text-emerald-600 font-medium">Home</a>
   <button onclick="logout()" class="bg-emerald-600 text-white px-4 py-2 rounded">Logout</button>
 </nav>
 
@@ -67,6 +69,7 @@
     <p id="m-qty" class="mt-2"></p>
     <p id="m-date"></p>
     <p id="m-phone"></p>
+    <p id="m-village"></p>
 
     <button onclick="contact()" class="bg-emerald-600 text-white w-full mt-4 py-2 rounded">
       Contact Farmer
@@ -140,9 +143,8 @@ function renderProducts(products) {
 
   products.forEach(p => {
 
-    const imageUrl = p.image_url
-      ? BASE + p.image_url   
-      : "https://picsum.photos/300/200";
+    //
+    const imageUrl = p.image_url || "https://picsum.photos/300/200";
 
     const card = document.createElement("div");
     card.className = "product-card bg-white p-4 rounded cursor-pointer";
@@ -155,14 +157,12 @@ function renderProducts(products) {
         View
       </button>
     `;
-  
 
     card.onclick = () => openModal(p.id);
 
     container.appendChild(card);
   });
 }
-
 // ================= FILTER =================
 function filterProducts() {
   const search = document.getElementById("search").value.toLowerCase();
@@ -182,9 +182,8 @@ function openModal(id) {
 
   document.getElementById("modal").classList.remove("hidden");
 
-  const imageUrl = currentProduct.image_url
-    ? BASE + currentProduct.image_url   // ✅ FIXED
-    : "https://picsum.photos/300/200";
+  
+  const imageUrl = currentProduct.image_url || "https://picsum.photos/300/200";
 
   document.getElementById("m-image").src = imageUrl;
   document.getElementById("m-name").innerText = currentProduct.name;
@@ -192,6 +191,7 @@ function openModal(id) {
   document.getElementById("m-qty").innerText = `Quantity: ${currentProduct.quantity || "-"}`;
   document.getElementById("m-date").innerText = `Available: ${currentProduct.available_date || "-"}`;
   document.getElementById("m-phone").innerText = `Phone: ${currentProduct.phone || "-"}`;
+  document.getElementById('m-village').innerText=`Village:${currentProduct.village || "-"}`;
 }
 
 function closeModal() {
