@@ -36,7 +36,8 @@ app = FastAPI(
 # Enable CORS so frontend can call backend (important for development)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://kisaanconnect-local.vercel.app"],
+    # allow_origins=["https://kisaanconnect-local.vercel.app"],
+    allow_origin=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
