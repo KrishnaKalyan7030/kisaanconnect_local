@@ -36,8 +36,7 @@ app = FastAPI(
 # Enable CORS so frontend can call backend (important for development)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://kisaanconnect-local.vercel.app"],
-    # allow_origin=["*"],
+    allow_origins=["*"],   
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -48,7 +47,7 @@ app.include_router(product_router,tags=['Products'])
 
 # Serve all frontend HTML files from root
 app.mount("/uploads",   StaticFiles(directory=UPLOAD_DIR), name="uploads")
-app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
+# app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
 app.mount("/js", StaticFiles(directory="frontend/js"), name="js")
 app.mount("/css", StaticFiles(directory="frontend/css"), name="css")
 app.mount("/assets", StaticFiles(directory="frontend/assets"), name="assets")
@@ -61,8 +60,3 @@ def hello():
     return {"message": "Hello from Kisaan Connect Backend!"}
 
 
-# # Optional: Show settings when app starts (helpful for debugging)
-# @app.on_event("startup")
-# async def startup_event():
-#     print("🚀 Kisaan Connect Backend is running...")
-#     print(f"Database URL: {settings.DATABASE_URL}")

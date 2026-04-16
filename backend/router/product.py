@@ -17,7 +17,7 @@ UPLOAD_DIR = Path("uploads")
 UPLOAD_DIR.mkdir(exist_ok=True)
 
 
-# ✅ CREATE PRODUCT
+# CREATE PRODUCT
 @router.post("/", response_model=ProductResponse)
 async def create_product(
     name: str = Form(...),
@@ -36,7 +36,7 @@ async def create_product(
     if current_user.user_type != "farmer":
         raise HTTPException(status_code=403, detail="Only farmers can add products")
 
-    # ✅ Save image
+    # Save image
     file_ext = image.filename.split(".")[-1]
     filename = f"{uuid.uuid4()}.{file_ext}"
     file_path = UPLOAD_DIR / filename
@@ -46,7 +46,7 @@ async def create_product(
 
     image_url = f"http://127.0.0.1:8000/uploads/{filename}"
 
-    # ✅ SAVE IMAGE URL IN DATABASE (MAIN FIX)
+    #  SAVE IMAGE URL IN DATABASE (MAIN FIX)
     new_product = Product(
         name=name,
         village=village,
@@ -67,13 +67,13 @@ async def create_product(
     return new_product
 
 
-# ✅ GET ALL PRODUCTS
+# GET ALL PRODUCTS
 @router.get("/", response_model=list[ProductResponse])
 def get_products(db: Session = Depends(get_db)):
     return db.query(Product).all()
 
 
-# ✅ GET MY PRODUCTS
+#  GET MY PRODUCTS
 @router.get("/my", response_model=list[ProductResponse])
 def get_my_products(
     current_user=Depends(get_current_user),
@@ -82,7 +82,7 @@ def get_my_products(
     return db.query(Product).filter(Product.farmer_id == current_user.id).all()
 
 
-# ✅ GET SINGLE PRODUCT
+#  GET SINGLE PRODUCT
 @router.get("/{product_id}", response_model=ProductResponse)
 def get_product(product_id: int, db: Session = Depends(get_db)):
     product = db.query(Product).filter(Product.id == product_id).first()
@@ -93,7 +93,7 @@ def get_product(product_id: int, db: Session = Depends(get_db)):
     return product
 
 
-# ✅ DELETE PRODUCT
+# DELETE PRODUCT
 @router.delete("/{product_id}")
 def delete_product(
     product_id: int,
