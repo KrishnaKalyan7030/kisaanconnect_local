@@ -6,10 +6,10 @@ from sqlalchemy.orm import Session
 from typing import Optional
 from datetime import date, time
 
-from ..db.database import get_db
-from ..models.product import Product
-from ..schemas.product import ProductResponse
-from ..dependencies.auth import get_current_user
+from db.database import get_db
+from models.product import Product
+from schemas.product import ProductResponse
+from dependencies.auth import get_current_user
 
 router = APIRouter(prefix="/products", tags=["Products"])
 

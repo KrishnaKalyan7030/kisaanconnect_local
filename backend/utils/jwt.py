@@ -1,5 +1,5 @@
 from typing import Optional
-from ..core.config import settings
+from core.config import settings
 from jose import jwt,JWTError
 from datetime import datetime ,timedelta
 

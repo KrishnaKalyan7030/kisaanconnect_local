@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import relationship
-from ..db.database import Base
+from db.database import Base
 import enum
 
 class UserType(str, enum.Enum):

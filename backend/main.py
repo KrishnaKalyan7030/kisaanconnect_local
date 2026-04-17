@@ -1,11 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .router.auth import router as auth_router  
-from .router.product import router as product_router
-from .core.config import settings
-from .db.database import Base, engine
-from .models.user import User
-from .models.product import Product 
+from router.auth import router as auth_router  
+from router.product import router as product_router
+from core.config import settings
+from db.database import Base, engine
+from models.user import User
+from models.product import Product 
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 import os

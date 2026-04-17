@@ -4,12 +4,12 @@ from sqlalchemy.orm import Session
 from jose import JWTError, jwt
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
-from ..db.database import get_db
-from ..models.user import User, UserType
-from ..schemas.auth import RegisterRequest, TokenResponse
-from ..utils.security import hash_password, verify_password
-from ..utils.jwt import create_access_token
-from ..core.config import settings
+from db.database import get_db
+from models.user import User, UserType
+from schemas.auth import RegisterRequest, TokenResponse
+from utils.security import hash_password, verify_password
+from utils.jwt import create_access_token
+from core.config import settings
 
 router = APIRouter(
     prefix="/auth",
