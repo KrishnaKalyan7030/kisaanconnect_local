@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, Date, Time
-from backend.db.database import Base
+from ..db.database import Base
 
 
 class Product(Base):

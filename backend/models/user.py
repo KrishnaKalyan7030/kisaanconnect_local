@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import relationship
-from backend.db.database import Base
+from ..db.database import Base
 import enum
 
 class UserType(str, enum.Enum):
@@ -21,8 +21,11 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     
     # This is the fixed version for PostgreSQL
+    # user_type = Column(
+    #     SQLEnum(UserType, name="usertype", create_type=False), 
+    #     nullable=False
+    # )
     user_type = Column(
-        SQLEnum(UserType, name="usertype", create_type=False), 
+        SQLEnum(UserType), 
         nullable=False
     )
-

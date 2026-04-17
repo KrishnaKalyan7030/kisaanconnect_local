@@ -1,40 +1,40 @@
 from fastapi import APIRouter, Request, HTTPException, Depends, Response, status
-from fastapi.templating import Jinja2Templates
+# from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from jose import JWTError, jwt
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
-from backend.db.database import get_db
-from backend.models.user import User, UserType
-from backend.schemas.auth import RegisterRequest, TokenResponse
-from backend.utils.security import hash_password, verify_password
-from backend.utils.jwt import create_access_token
-from backend.core.config import settings
+from ..db.database import get_db
+from ..models.user import User, UserType
+from ..schemas.auth import RegisterRequest, TokenResponse
+from ..utils.security import hash_password, verify_password
+from ..utils.jwt import create_access_token
+from ..core.config import settings
 
 router = APIRouter(
     prefix="/auth",
     tags=["Authentication"]
 )
 
-templates = Jinja2Templates(directory="frontend")
+# templates = Jinja2Templates(directory="frontend")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 # ====================== HTML ROUTES ======================
 
-@router.get("/")
-def home(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+# @router.get("/")
+# def home(request: Request):
+#     return templates.TemplateResponse("index.html", {"request": request})
 
 
-@router.get("/register")
-def register_page(request: Request):
-    return templates.TemplateResponse("register.html", {"request": request})
+# @router.get("/register")
+# def register_page(request: Request):
+#     return templates.TemplateResponse("register.html", {"request": request})
 
 
-@router.get("/login")
-def login_page(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+# @router.get("/login")
+# def login_page(request: Request):
+#     return templates.TemplateResponse("login.html", {"request": request})
 
 
 # ====================== REGISTER ======================
@@ -97,7 +97,7 @@ async def login_user(
     print('Password:',password)
 
     user = db.query(User).filter(User.email == email).first()
-    print(user.email)
+    
 
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
@@ -147,31 +147,31 @@ def get_current_user(
         )
          
          
-        print(f"Received token: {token}")  # See what token is coming in
-        print(f"Token length: {len(token)}")  # Check if it's truncated
-        print(f"Number of dots: {token.count('.')}")  # Should be 2
-        print("TOken added successfully!")
-        print(f"payload:{payload}")
+        # print(f"Received token: {token}")  # See what token is coming in
+        # print(f"Token length: {len(token)}")  # Check if it's truncated
+        # print(f"Number of dots: {token.count('.')}")  # Should be 2
+        # print("TOken added successfully!")
+        # print(f"payload:{payload}")
 
         user_id = payload.get("user_id")
-        print(f"UserID from toekn",{user_id})
+        # print(f"UserID from toekn",{user_id})
 
 
         if not user_id:
-            print('Non user id in payload')
+            # print('Non user id in payload')
             raise HTTPException(status_code=401, detail="Invalid token")
         
     except jwt.ExpiredSignatureError as e:
-        print(f"EXPIRED TOKEN: {e}")
+        # print(f"EXPIRED TOKEN: {e}")
         raise HTTPException(status_code=401, detail="Token has expired")
         
     except jwt.InvalidTokenError as e:
-        print(f"INVALID TOKEN: {e}")
-        print(f"Error type: {type(e).__name__}")
+        # print(f"INVALID TOKEN: {e}")
+        # print(f"Error type: {type(e).__name__}")
         raise HTTPException(status_code=401, detail=f"Token invalid: {str(e)}")
         
     except Exception as e:
-        print(f"UNEXPECTED ERROR: {e}")
+        # print(f"UNEXPECTED ERROR: {e}")
         raise HTTPException(status_code=401, detail="Authentication failed")
 
     except JWTError:
@@ -180,7 +180,7 @@ def get_current_user(
     user = db.query(User).filter(User.id == user_id).first()
     print(f'user form DB:{user.email if user else 'Not found'}')
     if not user:
-        print('User not found in database')
+        # print('User not found in database')
         raise HTTPException(status_code=404, detail="User not found")
 
     print(f'Authentication Successful for {user.email}')

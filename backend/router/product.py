@@ -6,10 +6,10 @@ from sqlalchemy.orm import Session
 from typing import Optional
 from datetime import date, time
 
-from backend.db.database import get_db
-from backend.models.product import Product
-from backend.schemas.product import ProductResponse
-from backend.dependencies.auth import get_current_user
+from ..db.database import get_db
+from ..models.product import Product
+from ..schemas.product import ProductResponse
+from ..dependencies.auth import get_current_user
 
 router = APIRouter(prefix="/products", tags=["Products"])
 
@@ -44,7 +44,7 @@ async def create_product(
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(image.file, buffer)
 
-    image_url = f"http://127.0.0.1:8000/uploads/{filename}"
+    image_url = f"/uploads/{filename}"
 
     #  SAVE IMAGE URL IN DATABASE (MAIN FIX)
     new_product = Product(

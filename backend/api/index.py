@@ -1,1 +1,5 @@
-from backend.main import app
+# api/index.py
+from main import app
+
+# Vercel needs this export
+app = app

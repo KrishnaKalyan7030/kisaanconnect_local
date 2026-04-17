@@ -1,10 +1,15 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from backend.core.config import settings
+from ..core.config import settings
+import os
 
-# Create engine for PostgreSQL
-engine = create_engine(settings.DATABASE_URL)
+# Create engine for PostgreSQL with connection pooling for production
+engine = create_engine(
+    settings.DATABASE_URL,
+    pool_pre_ping=True,  # Helps with connection drops
+    pool_recycle=300,    # Recycle connections every 5 minutes
+)
 
 # Session for database operations
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -19,4 +24,3 @@ def get_db():
         yield db
     finally:
         db.close()
-        

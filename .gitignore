@@ -1,7 +1,17 @@
 myenv/
-.env
+.env/
+venv/
+
 __pycache__/
 *.pyc
 node_modules/
+*.so
+.Python
+#Environment variables
+.env
+*.env
+
+
 uploads/
 .vscode/
+./idea
