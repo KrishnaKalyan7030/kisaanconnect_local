@@ -178,7 +178,6 @@ def get_current_user(
         raise HTTPException(status_code=401, detail="Token invalid or expired")
 
     user = db.query(User).filter(User.id == user_id).first()
-    print(f'user form DB:{user.email if user else 'Not found'}')
     if not user:
         # print('User not found in database')
         raise HTTPException(status_code=404, detail="User not found")
