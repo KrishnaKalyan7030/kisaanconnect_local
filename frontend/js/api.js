@@ -1,5 +1,5 @@
-const BASE_URL = "https://kisaanconnectlocal-backend.vercel.app"; 
-// const BASE_URL="http://127.0.0.1:8000"
+const BASE_URL = "https://kisaanconnect-backend.onrender.com"; 
+
 // ================= TOKEN =================
 function setToken(token) {
     localStorage.setItem("access_token", token);
@@ -99,6 +99,11 @@ window.API = {
         }
     },
 
+    async getUserRole() {
+      return localStorage.getItem("user_type");
+    },
+
+
     // ================= GET MY PRODUCTS =================
     async getMyProducts() {
         try {
@@ -113,6 +118,26 @@ window.API = {
         } catch {
             return { success: false };
         }
+    },
+
+    async showToast(message, type = 'success') {
+        // Create a temporary toast notification
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: ${type === 'success' ? '#4CAF50' : '#f44336'};
+            color: white;
+            border-radius: 4px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
     },
 
     // ================= CREATE PRODUCT - FIXED & IMPROVED =================
@@ -143,7 +168,7 @@ async createProduct(formData) {   // Now accepts FormData object, not JSON
         console.log(`Response Status: ${res.status}`, data);
 
         if (res.ok) {
-            console.log("✅ Product created successfully!");
+            console.log("Product created successfully!");
             return { success: true, data };
         }
 
@@ -153,7 +178,7 @@ async createProduct(formData) {   // Now accepts FormData object, not JSON
         };
 
     } catch (err) {
-        console.error("❌ Network Error:", err);
+        console.error("Network Error:", err);
         return { success: false, message: "Network error. Check console (F12)." };
     }
 },

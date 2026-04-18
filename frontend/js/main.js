@@ -57,13 +57,16 @@ function navigateTo(page) {
 
 // ================== Check Authentication Status ==================
 function checkAuth() {
-  if (!window.API.isLoggedIn()) {
-    window.location.href = '/login.html';
-    return false;
-  }
-  return true;
+    if (!window.API.isLoggedIn()) {
+        window.location.href = '/login.html';
+        return false;
+    }
+    // Add token validation check
+    window.API.getCurrentUser().catch(() => {
+        window.API.logout();
+    });
+    return true;
 }
-
 // ================== Role-based Redirection ==================
 function redirectToDashboard() {
   const role = window.API.getUserRole();
@@ -105,5 +108,5 @@ window.Main = {
 // Auto initialize on every page load
 document.addEventListener('DOMContentLoaded', () => {
   // You can add global initialization logic here if needed
-  console.log('✅ KisaanConnect main.js loaded');
+  console.log('KisaanConnect main.js loaded');
 });
