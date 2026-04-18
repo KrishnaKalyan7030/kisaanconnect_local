@@ -77,24 +77,7 @@
 # def health_check():
 #     return {"status": "healthy"}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# ==========================
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -115,7 +98,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Create tables on startup (PostgreSQL compatible)
+# Create tables on startup
 @app.on_event("startup")
 async def init_db():
     try:
@@ -133,14 +116,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ========== FIXED: STATIC FILES CONFIGURATION ==========
-# Get the absolute path to frontend folder
-FRONTEND_PATH = Path(__file__).parent.parent / "frontend"  # Goes up from backend/ to kisaanconnect/, then into frontend/
+# ========== STATIC FILES CONFIGURATION ==========
+FRONTEND_PATH = Path(__file__).parent.parent / "frontend"
 UPLOADS_PATH = Path(__file__).parent.parent / "uploads"
 
-# Mount static folders (only if they exist)
+# Mount static folders (CSS, JS, assets)
 if FRONTEND_PATH.exists():
-    # Mount individual folders from frontend
     css_path = FRONTEND_PATH / "css"
     js_path = FRONTEND_PATH / "js"
     assets_path = FRONTEND_PATH / "assets"
@@ -161,30 +142,26 @@ if UPLOADS_PATH.exists():
     app.mount("/uploads", StaticFiles(directory=str(UPLOADS_PATH)), name="uploads")
     print(f"✅ Uploads folder found at: {UPLOADS_PATH}")
 
-# Include API routers
+# ========== INCLUDE API ROUTERS ==========
+# Your APIs: /auth/login, /auth/register, /auth/me
+# And: /products/, /products/my, etc.
 app.include_router(auth_router, tags=['Authentication'])
 app.include_router(product_router, tags=['Products'])
 
-# ========== FIXED: HTML PAGE ROUTES ==========
-# Serve HTML pages (keep both API and UI working)
-
-@app.get("/api-status")  # Renamed to avoid conflict
-def api_status():
-    return {
-        "status": "API running", 
-        "database": "PostgreSQL",
-        "message": "KisaanConnect Backend"
-    }
+# ========== SERVE HTML PAGES (DIFFERENT PATHS FROM API) ==========
+# These are separate from /auth/* APIs
 
 @app.get("/")
 async def serve_index():
+    """Serve homepage at /"""
     index_path = FRONTEND_PATH / "index.html"
     if index_path.exists():
         return FileResponse(str(index_path))
-    return {"error": "index.html not found", "path": str(index_path)}
+    return {"error": "index.html not found"}
 
 @app.get("/login")
 async def serve_login():
+    """Serve login page at /login (different from API at /auth/login)"""
     login_path = FRONTEND_PATH / "login.html"
     if login_path.exists():
         return FileResponse(str(login_path))
@@ -192,6 +169,7 @@ async def serve_login():
 
 @app.get("/register")
 async def serve_register():
+    """Serve register page at /register (different from API at /auth/register)"""
     register_path = FRONTEND_PATH / "register.html"
     if register_path.exists():
         return FileResponse(str(register_path))
@@ -199,18 +177,29 @@ async def serve_register():
 
 @app.get("/marketplace")
 async def serve_marketplace():
+    """Serve marketplace page"""
     marketplace_path = FRONTEND_PATH / "marketplace.html"
     if marketplace_path.exists():
         return FileResponse(str(marketplace_path))
     return {"error": "marketplace.html not found"}
 
-# Catch-all for other .html files (like dashboard pages)
+# Catch-all for dashboard pages
 @app.get("/{page}.html")
 async def serve_html_pages(page: str):
+    """Serve any .html file (dashboard pages, etc.)"""
     file_path = FRONTEND_PATH / f"{page}.html"
     if file_path.exists():
         return FileResponse(str(file_path))
     return {"error": f"{page}.html not found"}
+
+@app.get("/api-status")
+def api_status():
+    """Check API status"""
+    return {
+        "status": "API running", 
+        "database": "PostgreSQL",
+        "message": "KisaanConnect Backend"
+    }
 
 @app.get("/health")
 def health_check():
