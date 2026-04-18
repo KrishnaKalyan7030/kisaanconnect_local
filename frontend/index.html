@@ -1,224 +1,153 @@
 <!DOCTYPE html>
-<html lang="mr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>KisaanConnect Local</title>
+  <title>KisaanConnect - Farm to Home</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  
+
+  <!-- Core Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/video_carousel.js"></script>
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
     
     body { 
       font-family: 'Poppins', sans-serif; 
     }
-    
+
     .hero-bg {
-      background: linear-gradient(rgba(22, 101, 52, 0.78), rgba(22, 101, 52, 0.85)),
+      background: linear-gradient(rgba(22, 101, 52, 0.82), rgba(22, 101, 52, 0.88)),
                   url('https://picsum.photos/id/1015/1920/1080') center/cover no-repeat;
       background-attachment: fixed;
     }
 
-    .paddy-bg {
-      background: linear-gradient(rgba(22, 101, 52, 0.75), rgba(22, 101, 52, 0.82)),
-                  url('https://picsum.photos/id/1016/1920/1080') center/cover no-repeat;
+    .product-card {
+      transition: all 0.3s ease;
+    }
+    .product-card:active {
+      transform: scale(0.97);
     }
 
-    .video-section {
-      background: linear-gradient(135deg, #166534 0%, #14532d 100%);
-      position: relative;
-      overflow: hidden;
+    .nav-link {
+      transition: all 0.2s ease;
     }
-    
-    .video-section::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: url('https://picsum.photos/id/1016/1920/1080') center/cover;
-      opacity: 0.12;
-      z-index: 0;
-    }
-
-    .main-video-card {
-      background: white;
-      border-radius: 24px;
-      overflow: hidden;
-      box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
-      transition: transform 0.4s ease;
-      position: relative;
-      z-index: 10;
-    }
-    
-    .main-video-card:hover {
-      transform: translateY(-12px);
-    }
-
-    /* Premium Footer */
-    .footer-curved {
-  background: linear-gradient(135deg, #14532d, #064e3b);
-  border-radius: 120px 120px 0 0;
-  margin-top: -80px;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Background texture */
-.footer-curved::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: url('https://picsum.photos/id/1016/1920/1080') center/cover;
-  opacity: 0.06;
-}
-
-/* Headings */
-.footer-heading {
-  text-transform: uppercase;
-  font-size: 13px;
-  letter-spacing: 2px;
-  color: #6ee7b7;
-  margin-bottom: 16px;
-  font-weight: 600;
-}
-
-/* Links */
-.footer-link {
-  display: inline-block;
-  color: #d1fae5;
-  transition: all 0.3s ease;
-}
-.footer-link:hover {
-  color: white;
-  transform: translateX(4px);
-}
-
-/* Social icons */
-.social-icon {
-  transition: all 0.3s ease;
-}
-.social-icon:hover {
-  color: #6ee7b7;
-  transform: scale(1.2);
-}
-
-/* Image animation */
-.farmer-image {
-  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.farmer-image:hover {
-  transform: scale(1.06) rotate(2deg);
-}
-   
-
   </style>
 </head>
-<body class="bg-[#f8f9f5]">
+<body class="bg-[#f8f9f5] min-h-screen">
 
-  <!-- Header (unchanged) -->
-  <header class="bg-white shadow-sm sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-6 py-4">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <i class="fas fa-seedling text-4xl text-emerald-600"></i>
-          <div>
-            <span class="text-2xl font-bold text-emerald-700">Kisaan</span>
-            <span class="text-2xl font-bold text-emerald-600">Connect</span>
-            <span class="text-xs text-emerald-500 block -mt-1">LOCAL</span>
-          </div>
-        </div>
-
-        <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
-          <a href="#" class="nav-link text-gray-700">Home</a>
-          <a href="marketplace.html" class="nav-link text-gray-700">Marketplace</a>
-          <a href="dashboard/farmer/index.html" class="nav-link text-gray-700">शेतकरीांसाठी</a>
-          <a href="#" class="nav-link text-gray-700">How it Works</a>
-          <a href="#" class="nav-link text-gray-700">Stories</a>
-        </nav>
-
-        <div class="flex items-center gap-4">
-          <select class="bg-white border border-emerald-300 rounded-2xl px-4 py-2 text-sm focus:outline-none">
-            <option>मराठी</option>
-            <option>हिंदी</option>
-            <option>English</option>
-          </select>
-          <button onclick="navigateTo('login.html')"
-            class="hidden sm:block px-6 py-2.5 bg-emerald-700 text-white rounded-2xl hover:bg-emerald-800 font-medium">
-            Login / Register
-          </button>
-
-          <button id="hamburger" class="md:hidden p-2 text-2xl text-emerald-700">
-            <i class="fas fa-bars"></i>
-          </button>
+  <!-- Navbar -->
+  <nav class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <i class="fas fa-seedling text-3xl text-emerald-600"></i>
+        <div>
+          <span class="text-2xl font-bold text-emerald-700">Kisaan</span>
+          <span class="text-2xl font-bold text-emerald-600">Connect</span>
         </div>
       </div>
 
-      <!-- Mobile Menu -->
-      <div id="mobile-menu" class="hidden md:hidden mt-4 py-4 border-t">
-        <nav class="flex flex-col gap-4 text-base font-medium">
-          <a href="#" class="nav-link px-4 py-3 hover:bg-emerald-50 rounded-2xl">Home</a>
-          <a href="marketplace.html" class="nav-link px-4 py-3 hover:bg-emerald-50 rounded-2xl">Marketplace</a>
-          <a href="dashboard/farmer/index.html" class="nav-link px-4 py-3 hover:bg-emerald-50 rounded-2xl">शेतकरीांसाठी</a>
-          <a href="#" class="nav-link px-4 py-3 hover:bg-emerald-50 rounded-2xl">How it Works</a>
-          <a href="#" class="nav-link px-4 py-3 hover:bg-emerald-50 rounded-2xl">Stories</a>
-          <button onclick="navigateTo('login.html')" class="w-full py-3 bg-emerald-700 text-white rounded-2xl font-medium mt-4">
-            Login / Register
-          </button>
-        </nav>
+      <!-- Desktop Menu -->
+      <div class="hidden md:flex items-center gap-8 text-sm font-medium">
+        <a href="marketplace.html" class="nav-link text-gray-700 hover:text-emerald-600">Marketplace</a>
+        <a href="dashboard/farmer/index.html" class="nav-link text-gray-700 hover:text-emerald-600">For Farmers</a>
+        <a href="#" class="nav-link text-gray-700 hover:text-emerald-600">How it Works</a>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button onclick="window.location.href='login.html'" 
+          class="hidden sm:block px-6 py-3 bg-emerald-700 text-white text-sm font-medium rounded-3xl hover:bg-emerald-800 transition">
+          Login / Register
+        </button>
+        
+        <!-- Mobile Hamburger -->
+        <button id="hamburger" class="md:hidden p-2 text-3xl text-emerald-700">
+          <i class="fas fa-bars"></i>
+        </button>
       </div>
     </div>
-  </header>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden bg-white border-t px-4 py-6">
+      <div class="flex flex-col gap-4 text-base font-medium">
+        <a href="marketplace.html" class="py-3 px-4 hover:bg-emerald-50 rounded-2xl">Marketplace</a>
+        <a href="dashboard/farmer/index.html" class="py-3 px-4 hover:bg-emerald-50 rounded-2xl">For Farmers</a>
+        <a href="#" class="py-3 px-4 hover:bg-emerald-50 rounded-2xl">How it Works</a>
+        <button onclick="window.location.href='login.html'" 
+          class="mt-4 w-full py-4 bg-emerald-700 text-white rounded-3xl font-medium">
+          Login / Register
+        </button>
+      </div>
+    </div>
+  </nav>
 
   <!-- Hero Section -->
-  <section class="paddy-bg text-white py-28 md:py-32">
-    <div class="max-w-5xl mx-auto px-6 text-center">
+  <section class="hero-bg text-white py-20 md:py-32">
+    <div class="max-w-5xl mx-auto px-5 text-center">
       <h1 class="text-4xl md:text-6xl font-bold leading-tight">
         शेतातून थेट तुमच्या घरापर्यंत
       </h1>
       <p class="mt-6 text-lg md:text-xl max-w-2xl mx-auto text-emerald-100">
-        स्थानिक शेतकऱ्यांना थेट खरेदीदारांशी जोडणे • ताजे • विश्वासार्ह • स्थानिक
+        Fresh • Local • Trusted • Direct from Farmer
       </p>
-      <div class="flex flex-col sm:flex-row gap-5 justify-center mt-12">
-        <a href="dashboard/farmer/index.html" class="px-10 py-5 bg-white text-emerald-700 font-semibold rounded-3xl hover:bg-emerald-50 transition flex items-center justify-center gap-3 text-lg">
+      
+      <div class="flex flex-col sm:flex-row gap-4 justify-center mt-12">
+        <a href="dashboard/farmer/index.html" 
+          class="px-8 py-5 bg-white text-emerald-700 font-semibold rounded-3xl text-lg active:scale-95 transition flex items-center justify-center gap-3">
           <i class="fas fa-seedling"></i> मी शेतकरी आहे
         </a>
-        <a href="marketplace.html" class="px-10 py-5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-3xl transition flex items-center justify-center gap-3 text-lg">
+        <a href="marketplace.html" 
+          class="px-8 py-5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-3xl text-lg active:scale-95 transition flex items-center justify-center gap-3">
           ताज्या भाज्या पहा →
         </a>
       </div>
     </div>
   </section>
 
-  <!-- Video Stories Section -->
-  <section class="video-section py-20">
-    <div class="max-w-7xl mx-auto px-6 relative z-10">
-      <h2 class="text-4xl md:text-5xl font-bold text-center mb-4 text-white">
-        KisaanConnect Stories
-      </h2>
-      <p class="text-emerald-100 text-center mb-12 max-w-md mx-auto">
-        आमच्या शेतकऱ्यांच्या यशकथा आणि शेतीचे खरे अनुभव
-      </p>
+  <!-- Featured Products -->
+  <section class="py-12 md:py-16 bg-emerald-50">
+    <div class="max-w-7xl mx-auto px-5">
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-3xl md:text-4xl font-bold text-emerald-800">Today's Fresh Picks</h2>
+        <a href="marketplace.html" class="text-emerald-600 font-medium flex items-center gap-2 text-sm md:text-base">
+          View All <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+
+      <div id="featured-products" 
+        class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+        <!-- Populated by JavaScript -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Video Stories Section (Kept but simplified for mobile) -->
+  <section class="video-section py-12 md:py-20 bg-emerald-900 text-white">
+    <div class="max-w-7xl mx-auto px-5">
+      <h2 class="text-3xl md:text-4xl font-bold text-center mb-3">KisaanConnect Stories</h2>
+      <p class="text-emerald-200 text-center mb-10">Real stories from our farmers</p>
       
-      <div class="grid md:grid-cols-12 gap-8">
+      <div class="grid md:grid-cols-12 gap-6">
         <div class="md:col-span-8">
-          <div class="main-video-card">
-            <video id="main-video" class="w-full aspect-video" controls autoplay muted></video>
-            <div class="p-6 bg-white flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="bg-white rounded-3xl overflow-hidden shadow-2xl">
+            <video id="main-video" class="w-full aspect-video" controls></video>
+            <div class="p-5 flex flex-col sm:flex-row justify-between items-center gap-4">
               <div>
-                <h3 id="video-title" class="font-semibold text-xl text-emerald-900"></h3>
+                <h3 id="video-title" class="font-semibold text-lg text-emerald-900"></h3>
                 <p id="video-duration" class="text-emerald-600 text-sm"></p>
               </div>
               <div class="flex gap-3">
-                <button onclick="prevVideo()" class="p-3 hover:bg-emerald-100 rounded-2xl transition text-emerald-700">
+                <button onclick="prevVideo()" class="p-4 hover:bg-emerald-100 rounded-2xl text-emerald-700">
                   <i class="fas fa-step-backward"></i>
                 </button>
-                <button onclick="togglePlay()" id="play-btn" class="p-4 hover:bg-emerald-100 rounded-2xl transition text-emerald-700">
-                  <i class="fas fa-pause"></i>
+                <button onclick="togglePlay()" id="play-btn" class="p-4 hover:bg-emerald-100 rounded-2xl text-emerald-700">
+                  <i class="fas fa-play"></i>
                 </button>
-                <button onclick="nextVideo()" class="p-3 hover:bg-emerald-100 rounded-2xl transition text-emerald-700">
+                <button onclick="nextVideo()" class="p-4 hover:bg-emerald-100 rounded-2xl text-emerald-700">
                   <i class="fas fa-step-forward"></i>
                 </button>
               </div>
@@ -227,189 +156,60 @@
         </div>
 
         <div class="md:col-span-4">
-          <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-6 h-full max-h-[520px] overflow-y-auto">
-            <h3 class="text-white font-medium mb-6 flex items-center gap-2">
-              <i class="fas fa-list"></i> इतर कथा
-            </h3>
-            <div id="playlist" class="space-y-4">
-              <!-- JS populated -->
-             
-      
-
-            </div>
+          <div id="playlist" class="space-y-3 max-h-[420px] overflow-y-auto pr-2">
+            <!-- Populated by video_carousel.js -->
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Featured Products -->
-  <section class="py-16 bg-emerald-50">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-12 gap-4">
-        <h2 class="text-4xl font-bold text-emerald-800">आज उपलब्ध ताज्या उत्पादने</h2>
-        <a href="marketplace.html" class="text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-2 text-lg">
-          सर्व पहा <i class="fas fa-arrow-right"></i>
-        </a>
-      </div>
-
-      <div id="featured-products" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        <!-- JS populated -->
-      </div>
+  <!-- Footer -->
+  <footer class="bg-emerald-900 text-white py-12">
+    <div class="max-w-7xl mx-auto px-5 text-center text-sm">
+      <p>© 2026 KisaanConnect Local • All Rights Reserved</p>
+      <p class="text-emerald-400 mt-2">Connecting Farmers & Buyers Directly</p>
     </div>
-  </section>
-
-  <!-- NEW PREMIUM FOOTER - Better than reference -->
-  <footer class="footer-curved text-white pt-20 pb-12 relative">
-  <div class="max-w-7xl mx-auto px-6 relative z-10">
-    
-    <div class="grid lg:grid-cols-12 gap-12 items-center">
-      
-      <!-- LEFT CONTENT -->
-      <div class="lg:col-span-8">
-        
-        <!-- Logo -->
-        <div class="flex items-center gap-4 mb-8">
-          <i class="fas fa-seedling text-5xl text-emerald-300"></i>
-          <div>
-            <span class="text-4xl font-bold">Kisaan</span>
-            <span class="text-4xl font-bold text-emerald-300">Connect</span>
-            <span class="text-xs tracking-[2px] bg-white/20 text-emerald-100 px-3 py-1 rounded-full ml-2">
-              LOCAL
-            </span>
-          </div>
-        </div>
-
-        <!-- Tagline -->
-        <p class="text-emerald-100 max-w-lg text-lg leading-relaxed">
-          शेतकरी आणि खरेदीदारांना थेट जोडणारी प्लॅटफॉर्म.<br>
-          ताजे, स्थानिक आणि विश्वासार्ह उत्पादने.
-        </p>
-
-        <!-- Links + Contact -->
-        <div class="grid md:grid-cols-2 gap-12 mt-12">
-          
-          <!-- MENU -->
-          <div>
-            <h4 class="footer-heading">MENU</h4>
-            <ul class="space-y-3">
-              <li><a href="#" class="footer-link">Home</a></li>
-              <li><a href="#" class="footer-link">About Us</a></li>
-              <li><a href="marketplace.html" class="footer-link">Marketplace</a></li>
-              <li><a href="dashboard/farmer/index.html" class="footer-link">शेतकरीांसाठी</a></li>
-              <li><a href="#" class="footer-link">FAQs</a></li>
-              <li><a href="#" class="footer-link">Why KisaanConnect?</a></li>
-            </ul>
-          </div>
-
-          <!-- CONTACT -->
-          <div>
-            <h4 class="footer-heading">CONTACT</h4>
-            <p class="text-emerald-100 text-sm leading-relaxed">
-              KisaanConnect Corporate Office<br>
-              MIDC, Pawne, Navi Mumbai<br>
-              Maharashtra - 400705
-            </p>
-
-            <div class="mt-5 space-y-2 text-sm">
-              <p class="flex items-center gap-2">
-                <i class="fas fa-phone text-emerald-300"></i>
-                +91 75838 88999
-              </p>
-              <p class="flex items-center gap-2">
-                <i class="fas fa-envelope text-emerald-300"></i>
-                customercare@kisaanconnect.in
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Social -->
-        <div class="flex gap-6 mt-10 text-2xl">
-          <a href="#" class="social-icon"><i class="fab fa-facebook"></i></a>
-          <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-          <a href="#" class="social-icon"><i class="fab fa-linkedin"></i></a>
-          <a href="#" class="social-icon"><i class="fab fa-x-twitter"></i></a>
-        </div>
-      </div>
-
-      <!-- RIGHT IMAGE (EDGE ALIGNED) -->
-      <div class="lg:col-span-4 flex justify-end">
-        <div class="relative translate-x-8 lg:translate-x-16">
-          
-          <img src="https://img.freepik.com/free-photo/farmer-carrying-wooden-crate-fresh-vegetables-field_23-2151983644.jpg?semt=ais_incoming&w=740&q=80"
-               alt="Farmer"
-               class="farmer-image w-[320px] lg:w-[380px] rounded-[30px] shadow-2xl border-8 border-white/20 object-cover">
-
-          <!-- Badge -->
-          <div class="absolute -top-4 -right-6 bg-white text-emerald-700 text-xs font-bold px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
-            <i class="fas fa-seedling"></i>
-            ताजे • विश्वासार्ह
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- Bottom Bar -->
-  <div class="border-t border-white/20 mt-16 pt-6 text-center text-emerald-300 text-sm">
-    © 2026 KisaanConnect Local • All Rights Reserved<br>
-    <span class="text-xs opacity-80">Privacy Policy | Sitemap | Terms & Conditions</span>
-  </div>
-</footer>
+  </footer>
 
   <script>
-    // Mobile Menu Toggle
-    const hamburger = document.getElementById('hamburger');
-    const mobileMenu = document.getElementById('mobile-menu');
+    // Load Featured Products
+    async function loadFeaturedProducts() {
+      const container = document.getElementById('featured-products');
+      try {
+        const result = await window.API.getAllProducts();
+        
+        if (!result.success || !result.data.length) {
+          container.innerHTML = `<p class="col-span-full text-center py-12 text-gray-500">No products available right now</p>`;
+          return;
+        }
 
-    hamburger.addEventListener('click', () => {
-      mobileMenu.classList.toggle('hidden');
-      const icon = hamburger.querySelector('i');
-      icon.classList.toggle('fa-bars');
-      icon.classList.toggle('fa-times');
+        container.innerHTML = result.data.slice(0, 8).map(p => `
+          <div onclick="window.location.href='marketplace.html?product=${p.id}'" 
+            class="product-card bg-white rounded-3xl overflow-hidden shadow-sm cursor-pointer">
+            <img src="${p.image_url || 'https://picsum.photos/id/1015/400/300'}" 
+                 class="w-full h-40 sm:h-48 object-cover">
+            <div class="p-4">
+              <h3 class="font-semibold text-base sm:text-lg line-clamp-2">${p.name}</h3>
+              <p class="text-emerald-600 font-bold text-xl mt-2">₹${p.price}/kg</p>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // Mobile Menu Toggle
+    document.getElementById('hamburger').addEventListener('click', () => {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('hidden');
     });
 
-    
-
-
-    function renderFeaturedProducts() {
-      const container = document.getElementById('featured-products');
-      const products = [
-        { name: "टोमॅटो", price: 35, img: "https://cdn.britannica.com/16/187216-050-CB57A09B/tomatoes-tomato-plant-Fruit-vegetable.jpg?w=400&h=300&c=crop" },
-        { name: "पालक", price: 25, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNoX_cstOjh0wxjqoO864OSPGHmkKVZgxOAw&s" },
-        { name: "कांदा", price: 28, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRpHDgEuP96mdsy2iMf-aZBRc6fBb4o_7wVaQ&s" },
-        { name: "मिरची", price: 55, img: "data:image/jpeg;base64,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" }
-      ];
-
-      container.innerHTML = products.map(p => `
-        <div class="product-card bg-white rounded-3xl overflow-hidden shadow">
-          <img src="${p.img}" class="w-full h-52 object-cover">
-          <div class="p-6">
-            <h3 class="font-semibold text-xl">${p.name}</h3>
-            <p class="text-emerald-600 text-3xl font-bold mt-2">₹${p.price}/kg</p>
-            <button class="mt-6 w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-medium transition">
-              खरेदी करा
-            </button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    window.onload = () => {
-      renderFeaturedProducts();
-      loadVideo(0);
-      renderPlaylist();
-    };
-
-    function navigateTo(page) {
-      window.location.href = page;
-    }
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      loadFeaturedProducts();
+    });
   </script>
-  <script src="/static/js/auth.js"></script>
-  <script src="/static/js/main.js"></script>
-  <script src="/static/js/video_carousel.js"></script>
- <source src="/static/assets/video.mp4" type="video/mp4">
 </body>
 </html>

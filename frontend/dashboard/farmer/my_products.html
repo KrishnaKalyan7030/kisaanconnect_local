@@ -1,184 +1,109 @@
 <!DOCTYPE html>
-<html lang="mr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>माझी उत्पादने - KisaanConnect</title>
+  <title>My Products - KisaanConnect</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="../../js/api.js"></script>
+  <script src="../../js/main.js"></script>
 
   <style>
     body { font-family: 'Poppins', sans-serif; }
-    .product-card {
-      transition: all 0.3s ease;
-    }
-    .product-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-    }
+    .product-card { transition: all 0.3s ease; }
+    .product-card:active { transform: scale(0.97); }
   </style>
 </head>
-
 <body class="bg-[#f8f9f5] min-h-screen pb-20">
 
-<!-- Navbar -->
 <nav class="bg-white shadow-sm border-b sticky top-0 z-50">
-  <div class="max-w-6xl mx-auto px-5 py-4 flex justify-between items-center">
-
+  <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
     <div class="flex items-center gap-3">
       <i class="fas fa-seedling text-3xl text-emerald-600"></i>
       <h1 class="text-2xl font-bold text-emerald-700">KisaanConnect</h1>
     </div>
-
     <div class="flex gap-4">
-      <a href="add-product.html"
-        class="bg-emerald-600 text-white px-5 py-2 rounded-3xl hover:bg-emerald-700">
-        + Add Product
-      </a>
-
-      <a href="./index.html"
-        class="text-emerald-700 font-medium">
-        Dashboard
-      </a>
+      <a href="add_products.html" class="bg-emerald-600 text-white px-6 py-3 rounded-3xl text-sm font-medium">+ Add Product</a>
+      <a href="index.html" class="text-emerald-700 font-medium">Dashboard</a>
     </div>
-
   </div>
 </nav>
 
-<div class="max-w-6xl mx-auto px-5 py-8">
+<div class="max-w-6xl mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold text-emerald-800 mb-8">My Products</h1>
 
-  <!-- Title -->
-  <h1 class="text-3xl font-bold text-emerald-800 mb-8">
-    माझी उत्पादने
-  </h1>
+  <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
 
-  <!-- Grid -->
-  <div id="products-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-
-  <!-- Empty -->
   <div id="empty" class="hidden text-center mt-20">
     <i class="fas fa-box text-6xl text-gray-300"></i>
-    <p class="text-gray-500 mt-4">No products found</p>
+    <p class="text-gray-500 mt-6 text-xl">No products yet</p>
+    <a href="add_products.html" class="mt-8 inline-block bg-emerald-600 text-white px-8 py-4 rounded-3xl">Add Your First Product</a>
   </div>
-
 </div>
 
 <script>
-const BASE_URL = "http://127.0.0.1:8000";
-
-let allProducts = [];
-
-// Get token
-function getToken() {
-  return localStorage.getItem("access_token");
-}
-
-// Load products from backend
-async function loadProducts() {
-  try {
-    const res = await fetch(`${BASE_URL}/products/my`, {
-      headers: {
-        "Authorization": `Bearer ${getToken()}`
-      }
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.detail || "Failed");
-    }
-
-    allProducts = data;
-    renderProducts();
-
-  } catch (err) {
-    console.error(err);
-    alert("Failed to load products");
-  }
-}
-
-//  Render
-function renderProducts() {
+async function loadMyProducts() {
   const grid = document.getElementById("products-grid");
-  grid.innerHTML = "";
+  const empty = document.getElementById("empty");
 
-  if (allProducts.length === 0) {
-    document.getElementById("empty").classList.remove("hidden");
+  const result = await window.API.getMyProducts();
+
+  if (!result.success) {
+    window.Main.showToast("Failed to load products", "error");
     return;
   }
 
-  document.getElementById("empty").classList.add("hidden");
+  const products = result.data || [];
 
-  allProducts.forEach(product => {
+  grid.innerHTML = "";
 
+  if (products.length === 0) {
+    empty.classList.remove("hidden");
+    return;
+  }
+
+  empty.classList.add("hidden");
+
+  products.forEach(product => {
     const card = document.createElement("div");
-    card.className = "product-card bg-white rounded-3xl overflow-hidden";
+    card.className = "product-card bg-white rounded-3xl overflow-hidden shadow-sm";
 
     card.innerHTML = `
-      <img src="${product.image_url || 'https://picsum.photos/400'}"
-        class="h-52 w-full object-cover"/>
-
-      <div class="p-5">
-        <h2 class="text-xl font-semibold">${product.name}</h2>
-        <p class="text-emerald-600 text-2xl font-bold mt-2">
-          ₹${product.price}/kg
-        </p>
-
-        <p class="text-sm text-gray-500 mt-2">
-          Qty: ${product.quantity} kg
-        </p>
-
-        <div class="flex gap-3 mt-5">
-
-          <button onclick="deleteProduct(${product.id})"
-            class="flex-1 bg-red-100 text-red-600 py-2 rounded-xl">
-            Delete
-          </button>
-
-        </div>
+      <img src="${product.image_url || 'https://picsum.photos/id/1015/400/300'}" class="w-full h-52 object-cover"/>
+      <div class="p-6">
+        <h3 class="font-semibold text-xl">${product.name}</h3>
+        <p class="text-emerald-600 font-bold text-3xl mt-2">₹${product.price}/kg</p>
+        <p class="text-gray-500 mt-3">Qty: ${product.quantity} kg</p>
+        <button onclick="deleteProduct(${product.id})" 
+          class="mt-6 w-full bg-red-100 hover:bg-red-200 text-red-600 py-3.5 rounded-2xl font-medium">
+          Delete
+        </button>
       </div>
     `;
-
     grid.appendChild(card);
   });
 }
 
-//  Delete
 async function deleteProduct(id) {
   if (!confirm("Delete this product?")) return;
-
-  try {
-    const res = await fetch(`${BASE_URL}/products/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Authorization": `Bearer ${getToken()}`
-      }
-    });
-
-    if (!res.ok) throw new Error();
-
-    alert("Deleted successfully");
-    loadProducts();
-
-  } catch {
-    alert("Delete failed");
+  const result = await window.API.deleteProduct(id);
+  if (result.success) {
+    window.Main.showToast("Product deleted", "success");
+    loadMyProducts();
+  } else {
+    window.Main.showToast("Delete failed", "error");
   }
 }
 
-// ✅ Protect page
 document.addEventListener("DOMContentLoaded", () => {
-  const token = getToken();
-  const role = localStorage.getItem("user_type");
-
-  if (!token || role !== "farmer") {
-    window.location.href = "/login.html";
+  if (!window.API.isLoggedIn()) {
+    window.location.href = "../../login.html";
     return;
   }
-
-  loadProducts();
+  loadMyProducts();
 });
 </script>
-
 </body>
 </html>

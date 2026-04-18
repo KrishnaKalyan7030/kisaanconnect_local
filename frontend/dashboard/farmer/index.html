@@ -8,165 +8,146 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
-  <!-- API FILE -->
+  <!-- Core Scripts -->
   <script src="../../js/api.js"></script>
+  <script src="../../js/main.js"></script>
 
   <style>
-    body { font-family: 'Poppins', sans-serif; }
-    .card { transition: all 0.3s ease; }
-    .card:hover { transform: translateY(-4px); }
+    body { 
+      font-family: 'Poppins', sans-serif; 
+    }
+    .card {
+      transition: all 0.3s ease;
+    }
+    .card:active {
+      transform: scale(0.97);
+    }
   </style>
 </head>
-
 <body class="bg-[#f8f9f5] min-h-screen pb-20">
 
-<!-- ================= NAVBAR ================= -->
+<!-- Navbar -->
 <nav class="bg-white shadow-sm border-b sticky top-0 z-50">
-  <div class="max-w-6xl mx-auto px-5 py-4 flex justify-between items-center">
-    <h1 class="text-2xl font-bold text-emerald-700">🌱 KisaanConnect</h1>
-     <a href="../../index.html" class="text-gray-700 hover:text-emerald-600 font-medium">Home</a>
-
-    <button onclick="logoutUser()" 
-      class="px-5 py-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-200">
-      Logout
-    </button>
+  <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <i class="fas fa-seedling text-3xl text-emerald-600"></i>
+      <h1 class="text-2xl font-bold text-emerald-700">KisaanConnect</h1>
+    </div>
+    
+    <div class="flex items-center gap-4">
+      <a href="../../marketplace.html" class="text-gray-700 hover:text-emerald-600 font-medium hidden sm:block">Marketplace</a>
+      <button onclick="window.Main.logout()" 
+        class="px-5 py-2.5 bg-red-100 text-red-600 rounded-3xl hover:bg-red-200 font-medium text-sm">
+        Logout
+      </button>
+    </div>
   </div>
 </nav>
 
-<!-- ================= CONTENT ================= -->
-<div class="max-w-6xl mx-auto px-5 pt-8">
+<!-- Main Content -->
+<div class="max-w-6xl mx-auto px-4 pt-8 pb-12">
 
   <!-- Welcome -->
-  <div class="mb-8">
-    <h1 id="welcome-text" class="text-3xl font-bold text-emerald-800">
-      Welcome 
+  <div class="mb-10">
+    <h1 id="welcome-text" class="text-3xl sm:text-4xl font-bold text-emerald-800">
+      Welcome, Farmer 👋
     </h1>
-    <p class="text-gray-600 mt-1">Manage your farm products easily</p>
+    <p class="text-gray-600 mt-2 text-base sm:text-lg">Manage your products and grow your business</p>
   </div>
 
-  <!-- Actions -->
-  <div class="grid grid-cols-2 gap-5 mb-10">
-
+  <!-- Quick Actions -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-12">
+    
     <a href="add_products.html" 
-      class="bg-emerald-600 text-white rounded-2xl py-10 flex flex-col items-center card">
-      <i class="fas fa-plus text-4xl mb-3"></i>
-      <span class="text-lg font-semibold">Add Product</span>
+      class="card bg-emerald-600 text-white rounded-3xl p-8 flex flex-col items-center justify-center shadow-lg active:scale-95 transition">
+      <i class="fas fa-plus text-5xl mb-4"></i>
+      <span class="text-xl font-semibold">Add New Product</span>
     </a>
 
     <a href="my_products.html" 
-      class="bg-white border-2 border-emerald-600 text-emerald-700 rounded-2xl py-10 flex flex-col items-center card">
-      <i class="fas fa-list text-4xl mb-3"></i>
-      <span class="text-lg font-semibold">My Products</span>
+      class="card bg-white border-2 border-emerald-600 text-emerald-700 rounded-3xl p-8 flex flex-col items-center justify-center shadow-lg active:scale-95 transition">
+      <i class="fas fa-list text-5xl mb-4"></i>
+      <span class="text-xl font-semibold">My Products</span>
     </a>
-
   </div>
 
   <!-- Recent Products -->
-  <div class="bg-white rounded-2xl shadow p-6">
-    <h2 class="text-xl font-semibold mb-4">Recent Listings</h2>
-    <div id="product-list" class="space-y-4"></div>
+  <div class="bg-white rounded-3xl shadow p-6 sm:p-8">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-semibold text-gray-800">Recent Listings</h2>
+      <a href="my_products.html" class="text-emerald-600 hover:underline font-medium flex items-center gap-1 text-sm">
+        View All <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+    
+    <div id="product-list" class="space-y-4 min-h-[180px]">
+      <!-- Populated by JavaScript -->
+    </div>
   </div>
 
 </div>
 
-<!-- ================= SCRIPT ================= -->
 <script>
-
-
-// ================= AUTH =================
-function getToken() {
-  return localStorage.getItem("access_token");
-}
-
-function logoutUser() {
-  localStorage.clear();
-  window.location.href = "../../login.html";
-}
-
-
-// ================= FETCH CURRENT USER =================
-async function loadUser() {
-  const token = getToken();
-
-  if (!token) {
+// Load Dashboard Data
+async function loadDashboard() {
+  if (!window.API || !window.API.isLoggedIn()) {
     window.location.href = "../../login.html";
     return;
   }
 
   try {
-    const res = await fetch("http://127.0.0.1:8000/auth/me", {
-      headers: {
-        "Authorization": "Bearer " + token
-      }
-    });
-
-    if (!res.ok) throw new Error();
-
-    const user = await res.json();
-
-    // Role protection
-    if (user.role !== "farmer") {
-      window.location.href = "../../login.html";
-      return;
+    // Load user info
+    const userResult = await window.API.getCurrentUser();
+    if (userResult.success && userResult.data) {
+      const user = userResult.data;
+      document.getElementById("welcome-text").innerText = 
+        `Welcome, ${user.full_name || user.name || 'Farmer'} 👋`;
     }
 
-    document.getElementById("welcome-text").innerText =
-      `Welcome, ${user.name} 👋`;
+    // Load recent products
+    const productsResult = await window.API.getMyProducts();
+    const container = document.getElementById("product-list");
 
-  } catch (err) {
-    window.location.href = "../../login.html";
-  }
-}
+    if (productsResult.success && productsResult.data && productsResult.data.length > 0) {
+      container.innerHTML = "";
 
+      productsResult.data.slice(0, 3).forEach(product => {
+        const div = document.createElement("div");
+        div.className = "p-5 bg-gray-50 rounded-2xl flex justify-between items-center";
 
-// ================= LOAD PRODUCTS =================
-async function loadProducts() {
-  const container = document.getElementById("product-list");
-
-  try {
-    const res = await fetch("http://127.0.0.1:8000/products");
-
-    const data = await res.json();
-
-    if (!res.ok) throw new Error();
-
-    if (data.length === 0) {
+        div.innerHTML = `
+          <div class="flex-1">
+            <p class="font-semibold text-lg">${product.name}</p>
+            <p class="text-emerald-600 font-medium">₹${product.price} / kg • ${product.quantity || ''} kg</p>
+          </div>
+          <span class="px-5 py-2 bg-emerald-100 text-emerald-700 rounded-2xl text-sm font-medium">Available</span>
+        `;
+        container.appendChild(div);
+      });
+    } else {
       container.innerHTML = `
-        <p class="text-gray-500 text-center">No products yet</p>
+        <div class="text-center py-12">
+          <p class="text-gray-500">You haven't added any products yet.</p>
+          <a href="add_products.html" 
+            class="mt-6 inline-block px-8 py-3 bg-emerald-600 text-white rounded-3xl hover:bg-emerald-700">
+            Add Your First Product
+          </a>
+        </div>
       `;
-      return;
     }
 
-    container.innerHTML = "";
-
-    data.slice(0, 3).forEach(product => {
-      const div = document.createElement("div");
-
-      div.className = "p-4 bg-gray-50 rounded-xl flex justify-between";
-
-      div.innerHTML = `
-        <div>
-          <p class="font-semibold">${product.name}</p>
-          <p class="text-sm text-gray-600">₹${product.price} • ${product.quantity}</p>
-        </div>
-        <span class="text-emerald-600 font-medium">Available</span>
-      `;
-
-      container.appendChild(div);
-    });
-
   } catch (err) {
-    container.innerHTML = `<p class="text-red-500">Failed to load products</p>`;
+    console.error(err);
+    document.getElementById("product-list").innerHTML = `
+      <p class="text-red-500 text-center py-8">Failed to load data. Please try again.</p>
+    `;
   }
 }
 
-
-// ================= INIT =================
-document.addEventListener("DOMContentLoaded", async () => {
-  await loadUser();
-  await loadProducts();
+// Initialize
+document.addEventListener("DOMContentLoaded", () => {
+  loadDashboard();
 });
-
 </script>
 
 </body>

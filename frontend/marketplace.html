@@ -8,77 +8,124 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
-  <!-- API FILE -->
+  <!-- Core Scripts -->
   <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
 
   <style>
-    body { font-family: 'Poppins', sans-serif; }
-    .product-card {
-      transition: 0.3s;
+    body { 
+      font-family: 'Poppins', sans-serif; 
     }
-    .product-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    .product-card {
+      transition: all 0.3s ease;
+    }
+    .product-card:active {
+      transform: scale(0.97);
     }
   </style>
 </head>
 
-<body class="bg-gray-50">
+<body class="bg-gray-50 min-h-screen">
 
-<!-- NAVBAR -->
-<nav class="bg-white shadow p-4 flex justify-between items-center">
-  <h1 class="text-xl font-bold text-emerald-700">KisaanConnect</h1>
-  
-   <a href="index.html" class="text-gray-700 hover:text-emerald-600 font-medium">Home</a>
-  <button onclick="logout()" class="bg-emerald-600 text-white px-4 py-2 rounded">Logout</button>
+<!-- Navbar -->
+<nav class="bg-white shadow-sm border-b sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <i class="fas fa-seedling text-3xl text-emerald-600"></i>
+      <div class="font-bold text-2xl">
+        <span class="text-emerald-700">Kisaan</span>
+        <span class="text-emerald-600">Connect</span>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <a href="index.html" class="text-gray-700 hover:text-emerald-600 font-medium hidden sm:block">Home</a>
+      <button onclick="window.Main.logout()" 
+        class="px-5 py-2.5 bg-red-100 text-red-600 rounded-3xl hover:bg-red-200 font-medium text-sm">
+        Logout
+      </button>
+    </div>
+  </div>
 </nav>
 
-<div class="max-w-7xl mx-auto p-6">
+<div class="max-w-7xl mx-auto px-4 py-6">
 
-  <!-- HEADER -->
-  <h2 class="text-3xl font-bold text-emerald-800 mb-6">Marketplace</h2>
-
-  <!-- SEARCH -->
-  <input 
-    type="text" 
-    id="search" 
-    placeholder="Search products..."
-    class="w-full mb-6 p-3 border rounded"
-    onkeyup="filterProducts()"
-  />
-
-  <!-- PRODUCTS GRID -->
-  <div id="products" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-    
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+    <div>
+      <h1 class="text-3xl sm:text-4xl font-bold text-emerald-800">Marketplace</h1>
+      <p class="text-gray-600 mt-1">Fresh produce from local farmers</p>
+    </div>
   </div>
 
-  <!-- EMPTY -->
-  <p id="empty" class="hidden text-center text-gray-500 mt-10">No products found</p>
+  <!-- Search Bar -->
+  <div class="relative mb-8">
+    <input 
+      type="text" 
+      id="search" 
+      placeholder="Search products... (tomato, onion, spinach...)"
+      class="w-full px-6 py-4 pl-14 border border-gray-300 rounded-3xl focus:outline-none focus:border-emerald-600 text-base"
+      onkeyup="filterProducts()"
+    />
+    <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 text-xl"></i>
+  </div>
+
+  <!-- Products Grid -->
+  <div id="products" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+    <!-- Populated by JavaScript -->
+  </div>
+
+  <!-- Empty State -->
+  <div id="empty" class="hidden text-center py-20">
+    <i class="fas fa-box text-6xl text-gray-300"></i>
+    <p class="text-gray-500 mt-6 text-xl">No products found</p>
+    <button onclick="document.getElementById('search').value=''; filterProducts()" 
+      class="mt-6 px-6 py-3 bg-emerald-600 text-white rounded-3xl hover:bg-emerald-700">
+      Clear Search
+    </button>
+  </div>
 
 </div>
 
-<!-- MODAL -->
-<div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-  <div class="bg-white p-6 rounded w-96">
+<!-- Product Detail Modal -->
+<div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-hidden shadow-2xl">
+    
+    <div class="relative">
+      <img id="m-image" class="w-full h-64 sm:h-72 object-cover" alt="Product"/>
+      <button onclick="closeModal()" 
+        class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-md">
+        <i class="fas fa-times text-xl"></i>
+      </button>
+    </div>
 
-    <img id="m-image" class="w-full h-48 object-cover rounded mb-4"/>
+    <div class="p-6">
+      <h3 id="m-name" class="text-2xl font-semibold"></h3>
+      <p id="m-price" class="text-emerald-600 font-bold text-3xl mt-2"></p>
 
-    <h3 id="m-name" class="text-xl font-bold"></h3>
-    <p id="m-price" class="text-emerald-600 font-bold"></p>
+      <div class="grid grid-cols-2 gap-4 mt-6 text-sm">
+        <div>
+          <p class="text-gray-500">Quantity</p>
+          <p id="m-qty" class="font-medium"></p>
+        </div>
+        <div>
+          <p class="text-gray-500">Village</p>
+          <p id="m-village" class="font-medium"></p>
+        </div>
+      </div>
 
-    <p id="m-qty" class="mt-2"></p>
-    <p id="m-date"></p>
-    <p id="m-phone"></p>
-    <p id="m-village"></p>
+      <p id="m-phone" class="mt-6 text-sm font-medium"></p>
 
-    <button onclick="contact()" class="bg-emerald-600 text-white w-full mt-4 py-2 rounded">
-      Contact Farmer
-    </button>
+      <button onclick="contact()" 
+        class="mt-8 w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white py-4 rounded-3xl font-semibold text-lg flex items-center justify-center gap-3">
+        <i class="fas fa-whatsapp"></i> Contact Farmer on WhatsApp
+      </button>
 
-    <button onclick="closeModal()" class="mt-2 w-full border py-2 rounded">
-      Close
-    </button>
-
+      <button onclick="closeModal()" 
+        class="mt-3 w-full py-4 text-gray-600 font-medium">
+        Close
+      </button>
+    </div>
   </div>
 </div>
 
@@ -86,48 +133,22 @@
 let allProducts = [];
 let currentProduct = null;
 
-const BASE = "https://kisaanconnect-backend.onrender.com";
-
-// ================= LOAD PRODUCTS =================
-// async function loadProducts() {
-//   try {
-//     const result = await window.API.getAllProducts();
-
-//     if (result.success) {
-//       allProducts = result.data;
-//       renderProducts(allProducts);
-//     } else {
-//       alert("Failed to load products");
-//     }
-//   } catch (err) {
-//     console.error(err);
-//     alert("Server error");
-//   }
-// }
-
 async function loadProducts() {
   try {
-    console.log("Calling API...");
-
     const result = await window.API.getAllProducts();
 
-    console.log("API RESULT:", result);
-
     if (result.success) {
-      allProducts = result.data;
+      allProducts = result.data || [];
       renderProducts(allProducts);
     } else {
-      console.error("API ERROR:", result);
-      alert("Failed to load products");
+      window.Main.showToast("Failed to load products", "error");
     }
-
   } catch (err) {
-    console.error("FETCH ERROR:", err);
-    alert("Server error");
+    console.error(err);
+    window.Main.showToast("Server error. Please try again.", "error");
   }
 }
 
-// ================= RENDER =================
 function renderProducts(products) {
   const container = document.getElementById("products");
   const empty = document.getElementById("empty");
@@ -142,80 +163,67 @@ function renderProducts(products) {
   empty.classList.add("hidden");
 
   products.forEach(p => {
-
-    //
-    const imageUrl = p.image_url || "https://picsum.photos/300/200";
+    const imageUrl = p.image_url || "https://picsum.photos/id/1015/400/300";
 
     const card = document.createElement("div");
-    card.className = "product-card bg-white p-4 rounded cursor-pointer";
+    card.className = "product-card bg-white rounded-3xl overflow-hidden shadow-sm cursor-pointer";
 
     card.innerHTML = `
-      <img src="${imageUrl}" class="w-full h-40 object-cover rounded"/>
-      <h3 class="mt-3 font-semibold">${p.name}</h3>
-      <p class="text-emerald-600 font-bold">₹${p.price}/kg</p>
-      <button class="bg-emerald-600 text-white w-full mt-3 py-2 rounded">
-        View
-      </button>
+      <img src="${imageUrl}" class="w-full h-40 sm:h-48 object-cover"/>
+      <div class="p-4">
+        <h3 class="font-semibold text-base sm:text-lg line-clamp-2">${p.name}</h3>
+        <p class="text-emerald-600 font-bold text-2xl mt-2">₹${p.price}/kg</p>
+        <p class="text-gray-500 text-sm mt-1">${p.quantity || 'N/A'} kg available</p>
+      </div>
     `;
 
-    card.onclick = () => openModal(p.id);
-
+    card.onclick = () => openModal(p);
     container.appendChild(card);
   });
 }
-// ================= FILTER =================
-function filterProducts() {
-  const search = document.getElementById("search").value.toLowerCase();
 
-  const filtered = allProducts.filter(p =>
-    p.name.toLowerCase().includes(search)
+function filterProducts() {
+  const searchTerm = document.getElementById("search").value.toLowerCase().trim();
+  
+  const filtered = allProducts.filter(p => 
+    p.name.toLowerCase().includes(searchTerm)
   );
 
   renderProducts(filtered);
 }
 
-// ================= MODAL =================
-function openModal(id) {
-  currentProduct = allProducts.find(p => p.id === id);
-
-  if (!currentProduct) return;
-
+function openModal(product) {
+  currentProduct = product;
   document.getElementById("modal").classList.remove("hidden");
 
-  
-  const imageUrl = currentProduct.image_url || "https://picsum.photos/300/200";
-
-  document.getElementById("m-image").src = imageUrl;
-  document.getElementById("m-name").innerText = currentProduct.name;
-  document.getElementById("m-price").innerText = `₹${currentProduct.price}/kg`;
-  document.getElementById("m-qty").innerText = `Quantity: ${currentProduct.quantity || "-"}`;
-  document.getElementById("m-date").innerText = `Available: ${currentProduct.available_date || "-"}`;
-  document.getElementById("m-phone").innerText = `Phone: ${currentProduct.phone || "-"}`;
-  document.getElementById('m-village').innerText=`Village:${currentProduct.village || "-"}`;
+  document.getElementById("m-image").src = product.image_url || "https://picsum.photos/id/1015/400/300";
+  document.getElementById("m-name").textContent = product.name;
+  document.getElementById("m-price").textContent = `₹${product.price}/kg`;
+  document.getElementById("m-qty").textContent = `${product.quantity || 'N/A'} kg`;
+  document.getElementById("m-village").textContent = product.village || 'N/A';
+  document.getElementById("m-phone").textContent = `Phone: ${product.phone || 'Not available'}`;
 }
 
 function closeModal() {
   document.getElementById("modal").classList.add("hidden");
 }
 
-// ================= CONTACT =================
 function contact() {
   if (!currentProduct?.phone) {
-    alert("Phone number not available");
+    window.Main.showToast("Phone number not available", "error");
     return;
   }
-
   window.open(`https://wa.me/${currentProduct.phone}`, "_blank");
 }
 
-// ================= LOGOUT =================
 function logout() {
-  localStorage.removeItem("access_token");
-  window.location.href = "login.html";
+  window.Main.logout();
 }
 
-// ================= INIT =================
-document.addEventListener("DOMContentLoaded", loadProducts);
+// Initialize
+document.addEventListener("DOMContentLoaded", () => {
+  loadProducts();
+});
 </script>
 
 </body>
