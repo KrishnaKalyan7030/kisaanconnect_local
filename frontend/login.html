@@ -46,31 +46,29 @@
         </div>
 
         <div class="p-8">
-            <form id="login-form">
-
-                      <!-- Email -->
-                      <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                        <input type="email" id="email" 
-                          class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-emerald-600 text-lg"
-                          placeholder="Enter your email" required />
-                      </div>
-                    
-                      <!-- Password -->
-                      <div class="mb-8">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                        <input type="password" id="password" 
-                          class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-emerald-600 text-lg"
-                          placeholder="Enter your password" required />
-                      </div>
-                    
-                      <!-- Login Button -->
-                      <button type="submit" id="login-btn"
-                        class="w-full bg-emerald-600 hover:bg-emerald-700 transition text-white font-semibold text-lg py-5 rounded-3xl flex items-center justify-center gap-3">
-                        Login
-                      </button>
-        
-             </form>
+          <form id="login-form">
+            <!-- Email -->
+            <div class="mb-6">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+              <input type="email" id="email" 
+                class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-emerald-600 text-lg"
+                placeholder="Enter your email" required />
+            </div>
+          
+            <!-- Password -->
+            <div class="mb-8">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+              <input type="password" id="password" 
+                class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-emerald-600 text-lg"
+                placeholder="Enter your password" required />
+            </div>
+          
+            <!-- Login Button -->
+            <button type="submit" id="login-btn"
+              class="w-full bg-emerald-600 hover:bg-emerald-700 transition text-white font-semibold text-lg py-5 rounded-3xl flex items-center justify-center gap-3">
+              <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+          </form>
 
           <!-- Register Link -->
           <div class="text-center mt-8">
@@ -89,61 +87,142 @@
 
   <script src="js/api.js"></script>
 
-<script>
-function showToast(msg, type = "success") {
-  alert(msg);
-}
-
-// ================= LOGIN =================
-async function handleLogin(e) {
-  e.preventDefault();
-
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
-  const btn = document.getElementById('login-btn');
-
-  btn.disabled = true;
-  btn.innerText = "Logging in...";
-
-  try {
-    // calling api here
-    const result = await window.API.login(email, password);
-
-    if (result.success) {
-      const data = result.data;
-
-      showToast("Login successful");
-
-      // Save token
-      localStorage.setItem("access_token", data.access_token);
-      localStorage.setItem("user_type", data.user_type);
-
-      // Redirect
-      setTimeout(() => {
-        if (data.user_type === "farmer") {
-          window.location.href = "dashboard/farmer/index.html";
-        } else {
-          window.location.href = "marketplace.html";
-        }
-      }, 800);
-
-    } else {
-      showToast(result.message || result.data?.detail || "Login failed", "error");
+  <script>
+  // ================= TOAST FUNCTION (Fixed) =================
+  function showToast(message, type = "success") {
+    // Remove any existing toast container if empty
+    let container = document.getElementById('toast-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'toast-container';
+      container.className = 'fixed bottom-6 right-6 space-y-3 z-50';
+      document.body.appendChild(container);
     }
-
-  } catch (err) {
-    console.error(err);
-    showToast("Something went wrong", "error");
+    
+    // Create toast element
+    const toast = document.createElement('div');
+    const bgColor = type === 'success' ? 'bg-emerald-500' : 'bg-red-500';
+    toast.className = `${bgColor} text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-in slide-in-from-right`;
+    toast.style.animation = 'slideIn 0.3s ease-out';
+    
+    const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+    toast.innerHTML = `
+      <i class="fas ${icon}"></i>
+      <span>${message}</span>
+    `;
+    
+    container.appendChild(toast);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transition = 'opacity 0.3s';
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
   }
 
-  btn.disabled = false;
-  btn.innerText = "Login";
-}
+  // Add CSS animation
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    .animate-in {
+      animation: slideIn 0.3s ease-out;
+    }
+  `;
+  document.head.appendChild(style);
 
-// attach AFTER DOM loads
-document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById('login-form').addEventListener('submit', handleLogin);
-});
-</script>
+  // ================= LOGIN HANDLER (Fixed) =================
+  async function handleLogin(e) {
+    e.preventDefault();
+
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const btn = document.getElementById('login-btn');
+
+    if (!email || !password) {
+      showToast("Please enter email and password", "error");
+      return;
+    }
+
+    // Disable button during login
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+
+    try {
+      // Check if API is available
+      if (!window.API || typeof window.API.login !== 'function') {
+        throw new Error("API not loaded. Please refresh the page.");
+      }
+
+      // Call API.login (which expects email as username parameter)
+      const result = await window.API.login(email, password);
+
+      if (result.success) {
+        const data = result.data;
+        
+        showToast("Login successful! Redirecting...", "success");
+
+        // API.login already stores token and user_type in localStorage
+        // So we don't need to store them again
+        
+        // Redirect based on user type
+        setTimeout(() => {
+          const userType = localStorage.getItem("user_type") || data.user_type;
+          if (userType === "farmer") {
+            window.location.href = "dashboard/farmer/index.html";
+          } else if (userType === "buyer") {
+            window.location.href = "marketplace.html";
+          } else {
+            window.location.href = "index.html";
+          }
+        }, 1000);
+
+      } else {
+        // Handle error response
+        const errorMsg = result.data?.detail || result.message || "Login failed";
+        showToast(errorMsg, "error");
+        
+        // Reset button
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+      }
+
+    } catch (err) {
+      console.error("Login error:", err);
+      showToast(err.message || "Network error. Please try again.", "error");
+      
+      // Reset button
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+    }
+  }
+
+  // ================= INITIALIZE ON PAGE LOAD =================
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById('login-form');
+    if (form) {
+      form.addEventListener('submit', handleLogin);
+    }
+    
+    // Auto-redirect if already logged in
+    if (window.API && window.API.isLoggedIn && window.API.isLoggedIn()) {
+      const userType = localStorage.getItem("user_type");
+      if (userType === "farmer") {
+        window.location.href = "dashboard/farmer/index.html";
+      } else if (userType === "buyer") {
+        window.location.href = "marketplace.html";
+      }
+    }
+  });
+  </script>
 </body>
 </html>
