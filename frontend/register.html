@@ -229,7 +229,14 @@
             window.location.href = "login.html";
           }, 1500);
         } else {
-          showToast(result.data?.detail || "Registration failed. Try again.", "error");
+          // showToast(result.data?.detail || "Registration failed. Try again.", "error");
+          const detail = result.data?.detail;
+          const errMsg = Array.isArray(detail)
+            ? detail.map(e => e.msg).join(", ")          // FastAPI validation errors
+            : typeof detail === "string"
+            ? detail
+            : "Registration failed. Try again.";
+          showToast(errMsg, "error");
         }
       } catch (err) {
         showToast("Something went wrong. Please check your connection.", "error");
