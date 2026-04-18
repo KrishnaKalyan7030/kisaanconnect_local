@@ -8,6 +8,7 @@ from models.user import User
 from models.product import Product 
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
+from fastapi.responses import FileResponse
 import os
 
 # initializing fastapi app here 
@@ -42,17 +43,26 @@ app.add_middleware(
 uploads_path = Path("../uploads")  # Path to kisaanconnect/uploads/
 if uploads_path.exists():
     app.mount("/uploads", StaticFiles(directory=str(uploads_path)), name="uploads")
+    app.mounts('/static',StaticFiles(directory='frontend'),name='static')
+
 # Include routers
 app.include_router(auth_router, tags=['Authentication'])
 app.include_router(product_router, tags=['Products'])
 
-@app.get("/")
-def root():
-    return {
-        "status": "API running", 
-        "database": "PostgreSQL",
-        "message": "KisaanConnect Backend"
-    }
+
+# @app.get("/")
+# def root():
+#     return {
+#         "status": "API running", 
+#         "database": "PostgreSQL",
+#         "message": "KisaanConnect Backend"
+#     }
+
+@app.get('/')
+async def serve_index():
+    return FileResponse('frontend/index.html')
+
+
 
 @app.get("/health")
 def health_check():
