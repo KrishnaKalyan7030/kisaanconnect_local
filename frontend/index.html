@@ -4,212 +4,178 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>KisaanConnect - Farm to Home</title>
-
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-
-  <!-- Core Scripts -->
+  <script src="js/translations.js"></script>
   <script src="js/api.js"></script>
   <script src="js/main.js"></script>
   <script src="js/video_carousel.js"></script>
-
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
-    
-    body { 
-      font-family: 'Poppins', sans-serif; 
-    }
-
+    body { font-family: 'Poppins', sans-serif; }
     .hero-bg {
-      background: linear-gradient(rgba(22, 101, 52, 0.82), rgba(22, 101, 52, 0.88)),
+      background: linear-gradient(rgba(22,101,52,0.82), rgba(22,101,52,0.88)),
                   url('https://picsum.photos/id/1015/1920/1080') center/cover no-repeat;
       background-attachment: fixed;
     }
-
-    .product-card {
-      transition: all 0.3s ease;
-    }
-    .product-card:active {
-      transform: scale(0.97);
-    }
-
-    .nav-link {
-      transition: all 0.2s ease;
-    }
+    .product-card { transition: all 0.3s ease; }
+    .product-card:active { transform: scale(0.97); }
   </style>
 </head>
 <body class="bg-[#f8f9f5] min-h-screen">
 
-  <!-- Navbar -->
-  <nav class="bg-white shadow-sm sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-      <div class="flex items-center gap-3">
-        <i class="fas fa-seedling text-3xl text-emerald-600"></i>
-        <div>
-          <span class="text-2xl font-bold text-emerald-700">Kisaan</span>
-          <span class="text-2xl font-bold text-emerald-600">Connect</span>
-        </div>
-      </div>
-
-      <!-- Desktop Menu -->
-      <div class="hidden md:flex items-center gap-8 text-sm font-medium">
-        <a href="marketplace.html" class="nav-link text-gray-700 hover:text-emerald-600">Marketplace</a>
-        <a href="dashboard/farmer/index.html" class="nav-link text-gray-700 hover:text-emerald-600">For Farmers</a>
-        <a href="#" class="nav-link text-gray-700 hover:text-emerald-600">How it Works</a>
-      </div>
-
-      <div class="flex items-center gap-3">
-        <button onclick="window.location.href='login.html'" 
-          class="hidden sm:block px-6 py-3 bg-emerald-700 text-white text-sm font-medium rounded-3xl hover:bg-emerald-800 transition">
-          Login / Register
-        </button>
-        
-        <!-- Mobile Hamburger -->
-        <button id="hamburger" class="md:hidden p-2 text-3xl text-emerald-700">
-          <i class="fas fa-bars"></i>
-        </button>
+<!-- Navbar -->
+<nav class="bg-white shadow-sm sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <i class="fas fa-seedling text-3xl text-emerald-600"></i>
+      <div>
+        <span class="text-2xl font-bold text-emerald-700">Kisaan</span>
+        <span class="text-2xl font-bold text-emerald-600">Connect</span>
       </div>
     </div>
 
-    <!-- Mobile Menu -->
-    <div id="mobile-menu" class="hidden md:hidden bg-white border-t px-4 py-6">
-      <div class="flex flex-col gap-4 text-base font-medium">
-        <a href="marketplace.html" class="py-3 px-4 hover:bg-emerald-50 rounded-2xl">Marketplace</a>
-        <a href="dashboard/farmer/index.html" class="py-3 px-4 hover:bg-emerald-50 rounded-2xl">For Farmers</a>
-        <a href="#" class="py-3 px-4 hover:bg-emerald-50 rounded-2xl">How it Works</a>
-        <button onclick="window.location.href='login.html'" 
-          class="mt-4 w-full py-4 bg-emerald-700 text-white rounded-3xl font-medium">
-          Login / Register
-        </button>
-      </div>
+    <!-- Desktop Menu -->
+    <div class="hidden md:flex items-center gap-6 text-sm font-medium">
+      <a href="marketplace.html" class="text-gray-700 hover:text-emerald-600 transition" data-i18n="nav_marketplace">Marketplace</a>
+      <a href="dashboard/farmer/index.html" class="text-gray-700 hover:text-emerald-600 transition" data-i18n="nav_for_farmers">For Farmers</a>
+      <a href="#how" class="text-gray-700 hover:text-emerald-600 transition" data-i18n="nav_how_it_works">How it Works</a>
+      <div class="lang-switcher-slot"></div>
     </div>
-  </nav>
 
-  <!-- Hero Section -->
-  <section class="hero-bg text-white py-20 md:py-32">
-    <div class="max-w-5xl mx-auto px-5 text-center">
-      <h1 class="text-4xl md:text-6xl font-bold leading-tight">
-        शेतातून थेट तुमच्या घरापर्यंत
-      </h1>
-      <p class="mt-6 text-lg md:text-xl max-w-2xl mx-auto text-emerald-100">
-        Fresh • Local • Trusted • Direct from Farmer
-      </p>
-      
-      <div class="flex flex-col sm:flex-row gap-4 justify-center mt-12">
-        <a href="dashboard/farmer/index.html" 
-          class="px-8 py-5 bg-white text-emerald-700 font-semibold rounded-3xl text-lg active:scale-95 transition flex items-center justify-center gap-3">
-          <i class="fas fa-seedling"></i> मी शेतकरी आहे
-        </a>
-        <a href="marketplace.html" 
-          class="px-8 py-5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-3xl text-lg active:scale-95 transition flex items-center justify-center gap-3">
-          ताज्या भाज्या पहा →
-        </a>
-      </div>
+    <div class="flex items-center gap-3">
+      <button onclick="window.location.href='login.html'"
+        class="hidden sm:block px-6 py-3 bg-emerald-700 text-white text-sm font-medium rounded-3xl hover:bg-emerald-800 transition"
+        data-i18n="nav_login">Login / Register</button>
+      <button id="hamburger" class="md:hidden p-2 text-3xl text-emerald-700">
+        <i class="fas fa-bars"></i>
+      </button>
     </div>
-  </section>
+  </div>
 
-  <!-- Featured Products -->
-  <section class="py-12 md:py-16 bg-emerald-50">
-    <div class="max-w-7xl mx-auto px-5">
-      <div class="flex justify-between items-center mb-8">
-        <h2 class="text-3xl md:text-4xl font-bold text-emerald-800">Today's Fresh Picks</h2>
-        <a href="marketplace.html" class="text-emerald-600 font-medium flex items-center gap-2 text-sm md:text-base">
-          View All <i class="fas fa-arrow-right"></i>
-        </a>
-      </div>
-
-      <div id="featured-products" 
-        class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-        <!-- Populated by JavaScript -->
-      </div>
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="hidden md:hidden bg-white border-t px-4 py-5">
+    <div class="flex flex-col gap-3 text-base font-medium">
+      <a href="marketplace.html" class="py-3 px-4 hover:bg-emerald-50 rounded-2xl" data-i18n="nav_marketplace">Marketplace</a>
+      <a href="dashboard/farmer/index.html" class="py-3 px-4 hover:bg-emerald-50 rounded-2xl" data-i18n="nav_for_farmers">For Farmers</a>
+      <a href="#how" class="py-3 px-4 hover:bg-emerald-50 rounded-2xl" data-i18n="nav_how_it_works">How it Works</a>
+      <div class="px-4 py-2"><div class="lang-switcher-slot"></div></div>
+      <button onclick="window.location.href='login.html'"
+        class="mt-2 w-full py-4 bg-emerald-700 text-white rounded-3xl font-medium"
+        data-i18n="nav_login">Login / Register</button>
     </div>
-  </section>
+  </div>
+</nav>
 
-  <!-- Video Stories Section (Kept but simplified for mobile) -->
-  <section class="video-section py-12 md:py-20 bg-emerald-900 text-white">
-    <div class="max-w-7xl mx-auto px-5">
-      <h2 class="text-3xl md:text-4xl font-bold text-center mb-3">KisaanConnect Stories</h2>
-      <p class="text-emerald-200 text-center mb-10">Real stories from our farmers</p>
-      
-      <div class="grid md:grid-cols-12 gap-6">
-        <div class="md:col-span-8">
-          <div class="bg-white rounded-3xl overflow-hidden shadow-2xl">
-            <video id="main-video" class="w-full aspect-video" controls></video>
-            <div class="p-5 flex flex-col sm:flex-row justify-between items-center gap-4">
-              <div>
-                <h3 id="video-title" class="font-semibold text-lg text-emerald-900"></h3>
-                <p id="video-duration" class="text-emerald-600 text-sm"></p>
-              </div>
-              <div class="flex gap-3">
-                <button onclick="prevVideo()" class="p-4 hover:bg-emerald-100 rounded-2xl text-emerald-700">
-                  <i class="fas fa-step-backward"></i>
-                </button>
-                <button onclick="togglePlay()" id="play-btn" class="p-4 hover:bg-emerald-100 rounded-2xl text-emerald-700">
-                  <i class="fas fa-play"></i>
-                </button>
-                <button onclick="nextVideo()" class="p-4 hover:bg-emerald-100 rounded-2xl text-emerald-700">
-                  <i class="fas fa-step-forward"></i>
-                </button>
-              </div>
+<!-- Hero -->
+<section class="hero-bg text-white py-20 md:py-32">
+  <div class="max-w-5xl mx-auto px-5 text-center">
+    <h1 class="text-4xl md:text-6xl font-bold leading-tight">
+      शेतातून थेट तुमच्या घरापर्यंत
+    </h1>
+    <p class="mt-6 text-lg md:text-xl max-w-2xl mx-auto text-emerald-100" data-i18n="hero_subtitle">
+      Fresh • Local • Trusted • Direct from Farmer
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center mt-12">
+      <a href="dashboard/farmer/index.html"
+        class="px-8 py-5 bg-white text-emerald-700 font-semibold rounded-3xl text-lg active:scale-95 transition flex items-center justify-center gap-3">
+        <i class="fas fa-seedling"></i>
+        <span data-i18n="hero_farmer_btn">I am a Farmer</span>
+      </a>
+      <a href="marketplace.html"
+        class="px-8 py-5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-3xl text-lg active:scale-95 transition flex items-center justify-center gap-3">
+        <span data-i18n="hero_buyer_btn">View Fresh Produce →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Products -->
+<section class="py-12 md:py-16 bg-emerald-50">
+  <div class="max-w-7xl mx-auto px-5">
+    <div class="flex justify-between items-center mb-8">
+      <h2 class="text-3xl md:text-4xl font-bold text-emerald-800" data-i18n="featured_title">Today's Fresh Picks</h2>
+      <a href="marketplace.html" class="text-emerald-600 font-medium flex items-center gap-2 text-sm md:text-base">
+        <span data-i18n="view_all">View All</span> <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+    <div id="featured-products" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"></div>
+  </div>
+</section>
+
+<!-- Video Stories -->
+<section class="py-12 md:py-20 bg-emerald-900 text-white">
+  <div class="max-w-7xl mx-auto px-5">
+    <h2 class="text-3xl md:text-4xl font-bold text-center mb-3">KisaanConnect Stories</h2>
+    <p class="text-emerald-200 text-center mb-10">Real stories from our farmers</p>
+    <div class="grid md:grid-cols-12 gap-6">
+      <div class="md:col-span-8">
+        <div class="bg-white rounded-3xl overflow-hidden shadow-2xl">
+          <video id="main-video" class="w-full aspect-video" controls></video>
+          <div class="p-5 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div>
+              <h3 id="video-title" class="font-semibold text-lg text-emerald-900"></h3>
+              <p id="video-duration" class="text-emerald-600 text-sm"></p>
+            </div>
+            <div class="flex gap-3">
+              <button onclick="prevVideo()" class="p-4 hover:bg-emerald-100 rounded-2xl text-emerald-700"><i class="fas fa-step-backward"></i></button>
+              <button onclick="togglePlay()" id="play-btn" class="p-4 hover:bg-emerald-100 rounded-2xl text-emerald-700"><i class="fas fa-play"></i></button>
+              <button onclick="nextVideo()" class="p-4 hover:bg-emerald-100 rounded-2xl text-emerald-700"><i class="fas fa-step-forward"></i></button>
             </div>
           </div>
         </div>
-
-        <div class="md:col-span-4">
-          <div id="playlist" class="space-y-3 max-h-[420px] overflow-y-auto pr-2">
-            <!-- Populated by video_carousel.js -->
-          </div>
-        </div>
+      </div>
+      <div class="md:col-span-4">
+        <div id="playlist" class="space-y-3 max-h-[420px] overflow-y-auto pr-2"></div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Footer -->
-  <footer class="bg-emerald-900 text-white py-12">
-    <div class="max-w-7xl mx-auto px-5 text-center text-sm">
-      <p>© 2026 KisaanConnect Local • All Rights Reserved</p>
-      <p class="text-emerald-400 mt-2">Connecting Farmers & Buyers Directly</p>
-    </div>
-  </footer>
+<!-- Footer -->
+<footer class="bg-emerald-900 text-white py-12">
+  <div class="max-w-7xl mx-auto px-5 text-center text-sm">
+    <p>© 2026 KisaanConnect Local • All Rights Reserved</p>
+    <p class="text-emerald-400 mt-2">Connecting Farmers & Buyers Directly</p>
+  </div>
+</footer>
 
-  <script>
-    // Load Featured Products
-    async function loadFeaturedProducts() {
-      const container = document.getElementById('featured-products');
-      try {
-        const result = await window.API.getAllProducts();
-        
-        if (!result.success || !result.data.length) {
-          container.innerHTML = `<p class="col-span-full text-center py-12 text-gray-500">No products available right now</p>`;
-          return;
-        }
-
-        container.innerHTML = result.data.slice(0, 8).map(p => `
-          <div onclick="window.location.href='marketplace.html?product=${p.id}'" 
-            class="product-card bg-white rounded-3xl overflow-hidden shadow-sm cursor-pointer">
-            <img src="${p.image_url || 'https://picsum.photos/id/1015/400/300'}" 
-                 class="w-full h-40 sm:h-48 object-cover">
-            <div class="p-4">
-              <h3 class="font-semibold text-base sm:text-lg line-clamp-2">${p.name}</h3>
-              <p class="text-emerald-600 font-bold text-xl mt-2">₹${p.price}/kg</p>
-            </div>
-          </div>
-        `).join('');
-      } catch (err) {
-        console.error(err);
+<script>
+  async function loadFeaturedProducts() {
+    const container = document.getElementById('featured-products');
+    try {
+      const result = await window.API.getAllProducts();
+      if (!result.success || !result.data || !result.data.length) {
+        container.innerHTML = `<p class="col-span-full text-center py-12 text-gray-500" data-i18n="no_products">No products available right now</p>`;
+        applyTranslations();
+        return;
       }
+      container.innerHTML = result.data.slice(0, 8).map(p => `
+        <div onclick="window.location.href='marketplace.html?product=${p.id}'"
+          class="product-card bg-white rounded-3xl overflow-hidden shadow-sm cursor-pointer">
+          <img src="${p.image_url || 'https://picsum.photos/id/1015/400/300'}" class="w-full h-40 sm:h-48 object-cover"
+               onerror="this.src='https://picsum.photos/id/1015/400/300'">
+          <div class="p-4">
+            <h3 class="font-semibold text-base sm:text-lg line-clamp-2">${p.name}</h3>
+            <p class="text-emerald-600 font-bold text-xl mt-2">₹${p.price}/kg</p>
+          </div>
+        </div>
+      `).join('');
+    } catch (err) {
+      container.innerHTML = `<p class="col-span-full text-center py-12 text-red-500">Failed to load products</p>`;
     }
+  }
 
-    // Mobile Menu Toggle
-    document.getElementById('hamburger').addEventListener('click', () => {
-      const menu = document.getElementById('mobile-menu');
-      menu.classList.toggle('hidden');
-    });
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('mobile-menu').classList.toggle('hidden');
+  });
 
-    // Initialize
-    document.addEventListener('DOMContentLoaded', () => {
-      loadFeaturedProducts();
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.lang-switcher-slot').forEach(slot => {
+      slot.innerHTML = getLangSwitcherHTML();
     });
-  </script>
+    loadFeaturedProducts();
+  });
+</script>
 </body>
 </html>

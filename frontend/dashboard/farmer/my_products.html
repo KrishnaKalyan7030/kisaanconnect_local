@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>My Products - KisaanConnect</title>
-
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="../../js/translations.js"></script>
   <script src="../../js/api.js"></script>
   <script src="../../js/main.js"></script>
-
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
     body { font-family: 'Poppins', sans-serif; }
     .product-card { transition: all 0.3s ease; }
     .product-card:active { transform: scale(0.97); }
@@ -18,92 +18,132 @@
 </head>
 <body class="bg-[#f8f9f5] min-h-screen pb-20">
 
+<!-- Navbar -->
 <nav class="bg-white shadow-sm border-b sticky top-0 z-50">
   <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
     <div class="flex items-center gap-3">
       <i class="fas fa-seedling text-3xl text-emerald-600"></i>
       <h1 class="text-2xl font-bold text-emerald-700">KisaanConnect</h1>
     </div>
-    <div class="flex gap-4">
-      <a href="add_products.html" class="bg-emerald-600 text-white px-6 py-3 rounded-3xl text-sm font-medium">+ Add Product</a>
-      <a href="index.html" class="text-emerald-700 font-medium">Dashboard</a>
+    <div class="hidden sm:flex items-center gap-3">
+      <div class="lang-switcher-slot"></div>
+      <a href="add_products.html"
+        class="bg-emerald-600 text-white px-6 py-3 rounded-3xl text-sm font-medium hover:bg-emerald-700 transition">
+        + <span data-i18n="nav_add_product">Add Product</span>
+      </a>
+      <a href="index.html" class="text-emerald-700 font-medium text-sm" data-i18n="nav_dashboard">Dashboard</a>
+      <button onclick="window.Main.logout()"
+        class="px-5 py-2.5 bg-red-100 text-red-600 rounded-3xl hover:bg-red-200 font-medium text-sm"
+        data-i18n="nav_logout">Logout</button>
+    </div>
+    <button id="hamburger" class="sm:hidden p-2 text-3xl text-emerald-700"><i class="fas fa-bars"></i></button>
+  </div>
+  <div id="mobile-menu" class="hidden sm:hidden bg-white border-t px-4 py-5">
+    <div class="flex flex-col gap-3 font-medium">
+      <a href="add_products.html" class="py-3 px-4 bg-emerald-50 text-emerald-700 rounded-2xl" data-i18n="nav_add_product">Add Product</a>
+      <a href="index.html" class="py-3 px-4 hover:bg-emerald-50 rounded-2xl" data-i18n="nav_dashboard">Dashboard</a>
+      <div class="px-4 py-2"><div class="lang-switcher-slot"></div></div>
+      <button onclick="window.Main.logout()" class="mt-2 w-full py-4 bg-red-100 text-red-600 rounded-3xl font-medium" data-i18n="nav_logout">Logout</button>
     </div>
   </div>
 </nav>
 
 <div class="max-w-6xl mx-auto px-4 py-8">
-  <h1 class="text-3xl font-bold text-emerald-800 mb-8">My Products</h1>
+  <h1 class="text-3xl font-bold text-emerald-800 mb-8" data-i18n="my_title">My Products</h1>
 
-  <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+  <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="col-span-full text-center py-16 text-gray-400">
+      <i class="fas fa-spinner fa-spin text-4xl"></i>
+    </div>
+  </div>
 
   <div id="empty" class="hidden text-center mt-20">
     <i class="fas fa-box text-6xl text-gray-300"></i>
-    <p class="text-gray-500 mt-6 text-xl">No products yet</p>
-    <a href="add_products.html" class="mt-8 inline-block bg-emerald-600 text-white px-8 py-4 rounded-3xl">Add Your First Product</a>
+    <p class="text-gray-500 mt-6 text-xl" data-i18n="my_no_products">No products yet</p>
+    <a href="add_products.html"
+      class="mt-8 inline-block bg-emerald-600 text-white px-8 py-4 rounded-3xl hover:bg-emerald-700 transition"
+      data-i18n="nav_add_product">Add Your First Product</a>
   </div>
 </div>
 
+<div id="toast-container" class="fixed bottom-6 left-1/2 -translate-x-1/2 space-y-3 z-50"></div>
+
 <script>
-async function loadMyProducts() {
-  const grid = document.getElementById("products-grid");
-  const empty = document.getElementById("empty");
+  async function loadMyProducts() {
+    const grid  = document.getElementById("products-grid");
+    const empty = document.getElementById("empty");
 
-  const result = await window.API.getMyProducts();
+    const result = await window.API.getMyProducts();
 
-  if (!result.success) {
-    window.Main.showToast("Failed to load products", "error");
-    return;
+    if (!result.success) {
+      grid.innerHTML = `<p class="col-span-full text-red-500 text-center py-12" data-i18n="my_load_fail">Failed to load products</p>`;
+      applyTranslations();
+      return;
+    }
+
+    const products = result.data || [];
+    grid.innerHTML = "";
+
+    if (products.length === 0) {
+      empty.classList.remove("hidden");
+      applyTranslations();
+      return;
+    }
+
+    empty.classList.add("hidden");
+
+    products.forEach(product => {
+      const card = document.createElement("div");
+      card.className = "product-card bg-white rounded-3xl overflow-hidden shadow-sm";
+      card.innerHTML = `
+        <img src="${product.image_url || 'https://picsum.photos/id/1015/400/300'}"
+             class="w-full h-52 object-cover"
+             onerror="this.src='https://picsum.photos/id/1015/400/300'"/>
+        <div class="p-6">
+          <h3 class="font-semibold text-xl">${product.name}</h3>
+          <p class="text-emerald-600 font-bold text-3xl mt-2">₹${product.price}/kg</p>
+          <p class="text-gray-500 mt-3">Qty: ${product.quantity} kg</p>
+          <p class="text-gray-400 text-sm mt-1">${product.village || ''}</p>
+          <button onclick="deleteProduct(${product.id})"
+            class="mt-6 w-full bg-red-100 hover:bg-red-200 text-red-600 py-3.5 rounded-2xl font-medium transition min-h-[48px]"
+            data-i18n="my_delete">Delete</button>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+
+    applyTranslations();
   }
 
-  const products = result.data || [];
+  async function deleteProduct(id) {
+    const confirmMsg = window.t('my_delete_confirm');
+    if (!confirm(confirmMsg)) return;
 
-  grid.innerHTML = "";
-
-  if (products.length === 0) {
-    empty.classList.remove("hidden");
-    return;
+    const result = await window.API.deleteProduct(id);
+    if (result.success) {
+      window.Main.showToast(window.t('my_deleted'), "success");
+      loadMyProducts();
+    } else {
+      window.Main.showToast(window.t('my_delete_fail'), "error");
+    }
   }
 
-  empty.classList.add("hidden");
-
-  products.forEach(product => {
-    const card = document.createElement("div");
-    card.className = "product-card bg-white rounded-3xl overflow-hidden shadow-sm";
-
-    card.innerHTML = `
-      <img src="${product.image_url || 'https://picsum.photos/id/1015/400/300'}" class="w-full h-52 object-cover"/>
-      <div class="p-6">
-        <h3 class="font-semibold text-xl">${product.name}</h3>
-        <p class="text-emerald-600 font-bold text-3xl mt-2">₹${product.price}/kg</p>
-        <p class="text-gray-500 mt-3">Qty: ${product.quantity} kg</p>
-        <button onclick="deleteProduct(${product.id})" 
-          class="mt-6 w-full bg-red-100 hover:bg-red-200 text-red-600 py-3.5 rounded-2xl font-medium">
-          Delete
-        </button>
-      </div>
-    `;
-    grid.appendChild(card);
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('mobile-menu').classList.toggle('hidden');
   });
-}
 
-async function deleteProduct(id) {
-  if (!confirm("Delete this product?")) return;
-  const result = await window.API.deleteProduct(id);
-  if (result.success) {
-    window.Main.showToast("Product deleted", "success");
+  document.addEventListener("DOMContentLoaded", async () => {
+    document.querySelectorAll('.lang-switcher-slot').forEach(s => s.innerHTML = getLangSwitcherHTML());
+
+    const ok = await window.Main.checkAuth();
+    if (!ok) return;
+    if (window.API.getUserRole() !== "farmer") {
+      window.location.href = "../../marketplace.html";
+      return;
+    }
+
     loadMyProducts();
-  } else {
-    window.Main.showToast("Delete failed", "error");
-  }
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  if (!window.API.isLoggedIn()) {
-    window.location.href = "../../login.html";
-    return;
-  }
-  loadMyProducts();
-});
+  });
 </script>
 </body>
 </html>

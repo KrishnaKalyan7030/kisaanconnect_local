@@ -4,24 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Farmer Dashboard - KisaanConnect</title>
-
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-
-  <!-- Core Scripts -->
+  <script src="../../js/translations.js"></script>
   <script src="../../js/api.js"></script>
   <script src="../../js/main.js"></script>
-
   <style>
-    body { 
-      font-family: 'Poppins', sans-serif; 
-    }
-    .card {
-      transition: all 0.3s ease;
-    }
-    .card:active {
-      transform: scale(0.97);
-    }
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    body { font-family: 'Poppins', sans-serif; }
+    .card { transition: all 0.3s ease; }
+    .card:active { transform: scale(0.97); }
   </style>
 </head>
 <body class="bg-[#f8f9f5] min-h-screen pb-20">
@@ -33,122 +25,121 @@
       <i class="fas fa-seedling text-3xl text-emerald-600"></i>
       <h1 class="text-2xl font-bold text-emerald-700">KisaanConnect</h1>
     </div>
-    
-    <div class="flex items-center gap-4">
-      <a href="../../marketplace.html" class="text-gray-700 hover:text-emerald-600 font-medium hidden sm:block">Marketplace</a>
-      <button onclick="window.Main.logout()" 
-        class="px-5 py-2.5 bg-red-100 text-red-600 rounded-3xl hover:bg-red-200 font-medium text-sm">
-        Logout
-      </button>
+    <div class="hidden sm:flex items-center gap-4">
+      <a href="../../marketplace.html" class="text-gray-700 hover:text-emerald-600 font-medium text-sm" data-i18n="nav_marketplace">Marketplace</a>
+      <div class="lang-switcher-slot"></div>
+      <button onclick="window.Main.logout()"
+        class="px-5 py-2.5 bg-red-100 text-red-600 rounded-3xl hover:bg-red-200 font-medium text-sm"
+        data-i18n="nav_logout">Logout</button>
+    </div>
+    <button id="hamburger" class="sm:hidden p-2 text-3xl text-emerald-700"><i class="fas fa-bars"></i></button>
+  </div>
+  <div id="mobile-menu" class="hidden sm:hidden bg-white border-t px-4 py-5">
+    <div class="flex flex-col gap-3 font-medium">
+      <a href="../../marketplace.html" class="py-3 px-4 hover:bg-emerald-50 rounded-2xl" data-i18n="nav_marketplace">Marketplace</a>
+      <a href="add_products.html" class="py-3 px-4 hover:bg-emerald-50 rounded-2xl" data-i18n="nav_add_product">Add Product</a>
+      <a href="my_products.html" class="py-3 px-4 hover:bg-emerald-50 rounded-2xl" data-i18n="nav_my_products">My Products</a>
+      <div class="px-4 py-2"><div class="lang-switcher-slot"></div></div>
+      <button onclick="window.Main.logout()" class="mt-2 w-full py-4 bg-red-100 text-red-600 rounded-3xl font-medium" data-i18n="nav_logout">Logout</button>
     </div>
   </div>
 </nav>
 
-<!-- Main Content -->
 <div class="max-w-6xl mx-auto px-4 pt-8 pb-12">
-
-  <!-- Welcome -->
   <div class="mb-10">
-    <h1 id="welcome-text" class="text-3xl sm:text-4xl font-bold text-emerald-800">
-      Welcome, Farmer 👋
-    </h1>
-    <p class="text-gray-600 mt-2 text-base sm:text-lg">Manage your products and grow your business</p>
+    <h1 id="welcome-text" class="text-3xl sm:text-4xl font-bold text-emerald-800" data-i18n="farmer_welcome">Welcome, Farmer 👋</h1>
+    <p class="text-gray-600 mt-2 text-base sm:text-lg" data-i18n="farmer_subtitle">Manage your products and grow your business</p>
   </div>
 
-  <!-- Quick Actions -->
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-12">
-    
-    <a href="add_products.html" 
-      class="card bg-emerald-600 text-white rounded-3xl p-8 flex flex-col items-center justify-center shadow-lg active:scale-95 transition">
+    <a href="add_products.html"
+      class="card bg-emerald-600 text-white rounded-3xl p-8 flex flex-col items-center justify-center shadow-lg active:scale-95 transition min-h-[140px]">
       <i class="fas fa-plus text-5xl mb-4"></i>
-      <span class="text-xl font-semibold">Add New Product</span>
+      <span class="text-xl font-semibold" data-i18n="farmer_add_btn">Add New Product</span>
     </a>
-
-    <a href="my_products.html" 
-      class="card bg-white border-2 border-emerald-600 text-emerald-700 rounded-3xl p-8 flex flex-col items-center justify-center shadow-lg active:scale-95 transition">
+    <a href="my_products.html"
+      class="card bg-white border-2 border-emerald-600 text-emerald-700 rounded-3xl p-8 flex flex-col items-center justify-center shadow-lg active:scale-95 transition min-h-[140px]">
       <i class="fas fa-list text-5xl mb-4"></i>
-      <span class="text-xl font-semibold">My Products</span>
+      <span class="text-xl font-semibold" data-i18n="farmer_my_btn">My Products</span>
     </a>
   </div>
 
-  <!-- Recent Products -->
   <div class="bg-white rounded-3xl shadow p-6 sm:p-8">
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-2xl font-semibold text-gray-800">Recent Listings</h2>
+      <h2 class="text-2xl font-semibold text-gray-800" data-i18n="farmer_recent">Recent Listings</h2>
       <a href="my_products.html" class="text-emerald-600 hover:underline font-medium flex items-center gap-1 text-sm">
-        View All <i class="fas fa-arrow-right"></i>
+        <span data-i18n="farmer_view_all">View All</span> <i class="fas fa-arrow-right"></i>
       </a>
     </div>
-    
     <div id="product-list" class="space-y-4 min-h-[180px]">
-      <!-- Populated by JavaScript -->
+      <p class="text-center text-gray-400 py-8"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</p>
     </div>
   </div>
-
 </div>
 
+<div id="toast-container" class="fixed bottom-6 left-1/2 -translate-x-1/2 space-y-3 z-50"></div>
+
 <script>
-// Load Dashboard Data
-async function loadDashboard() {
-  if (!window.API || !window.API.isLoggedIn()) {
-    window.location.href = "../../login.html";
-    return;
-  }
+  async function loadDashboard() {
+    const ok = await window.Main.checkAuth();
+    if (!ok) return;
 
-  try {
-    // Load user info
-    const userResult = await window.API.getCurrentUser();
-    if (userResult.success && userResult.data) {
-      const user = userResult.data;
-      document.getElementById("welcome-text").innerText = 
-        `Welcome, ${user.full_name || user.name || 'Farmer'} 👋`;
+    if (window.API.getUserRole() !== "farmer") {
+      window.location.href = "../../marketplace.html";
+      return;
     }
 
-    // Load recent products
-    const productsResult = await window.API.getMyProducts();
-    const container = document.getElementById("product-list");
+    try {
+      const userResult = await window.API.getCurrentUser();
+      if (userResult.success && userResult.data) {
+        const name = userResult.data.full_name || userResult.data.name || 'Farmer';
+        document.getElementById("welcome-text").textContent = `Welcome, ${name} 👋`;
+      }
 
-    if (productsResult.success && productsResult.data && productsResult.data.length > 0) {
-      container.innerHTML = "";
+      const productsResult = await window.API.getMyProducts();
+      const container = document.getElementById("product-list");
 
-      productsResult.data.slice(0, 3).forEach(product => {
-        const div = document.createElement("div");
-        div.className = "p-5 bg-gray-50 rounded-2xl flex justify-between items-center";
-
-        div.innerHTML = `
-          <div class="flex-1">
-            <p class="font-semibold text-lg">${product.name}</p>
-            <p class="text-emerald-600 font-medium">₹${product.price} / kg • ${product.quantity || ''} kg</p>
-          </div>
-          <span class="px-5 py-2 bg-emerald-100 text-emerald-700 rounded-2xl text-sm font-medium">Available</span>
-        `;
-        container.appendChild(div);
-      });
-    } else {
-      container.innerHTML = `
-        <div class="text-center py-12">
-          <p class="text-gray-500">You haven't added any products yet.</p>
-          <a href="add_products.html" 
-            class="mt-6 inline-block px-8 py-3 bg-emerald-600 text-white rounded-3xl hover:bg-emerald-700">
-            Add Your First Product
-          </a>
-        </div>
-      `;
+      if (productsResult.success && productsResult.data && productsResult.data.length > 0) {
+        container.innerHTML = "";
+        productsResult.data.slice(0, 3).forEach(product => {
+          const div = document.createElement("div");
+          div.className = "p-5 bg-gray-50 rounded-2xl flex justify-between items-center gap-4";
+          div.innerHTML = `
+            <div class="flex-1 min-w-0">
+              <p class="font-semibold text-lg truncate">${product.name}</p>
+              <p class="text-emerald-600 font-medium">₹${product.price}/kg • ${product.quantity || ''} kg</p>
+            </div>
+            <span class="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-2xl text-sm font-medium flex-shrink-0"
+                  data-i18n="farmer_available">Available</span>
+          `;
+          container.appendChild(div);
+        });
+        applyTranslations();
+      } else {
+        container.innerHTML = `
+          <div class="text-center py-12">
+            <p class="text-gray-500" data-i18n="farmer_no_products">You haven't added any products yet.</p>
+            <a href="add_products.html" class="mt-6 inline-block px-8 py-3 bg-emerald-600 text-white rounded-3xl hover:bg-emerald-700">
+              <span data-i18n="farmer_add_first">Add Your First Product</span>
+            </a>
+          </div>`;
+        applyTranslations();
+      }
+    } catch (err) {
+      document.getElementById("product-list").innerHTML =
+        `<p class="text-red-500 text-center py-8" data-i18n="farmer_load_fail">Failed to load data. Please try again.</p>`;
+      applyTranslations();
     }
-
-  } catch (err) {
-    console.error(err);
-    document.getElementById("product-list").innerHTML = `
-      <p class="text-red-500 text-center py-8">Failed to load data. Please try again.</p>
-    `;
   }
-}
 
-// Initialize
-document.addEventListener("DOMContentLoaded", () => {
-  loadDashboard();
-});
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('mobile-menu').classList.toggle('hidden');
+  });
+
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll('.lang-switcher-slot').forEach(s => s.innerHTML = getLangSwitcherHTML());
+    loadDashboard();
+  });
 </script>
-
 </body>
 </html>

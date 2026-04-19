@@ -4,18 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Buyer Dashboard - KisaanConnect</title>
-
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="../../js/translations.js"></script>
   <script src="../../js/api.js"></script>
   <script src="../../js/main.js"></script>
-
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
     body { font-family: 'Poppins', sans-serif; }
   </style>
 </head>
 <body class="bg-[#f8f9f5] min-h-screen">
 
+<!-- Navbar -->
 <nav class="bg-white shadow-sm border-b sticky top-0 z-50">
   <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
     <div class="flex items-center gap-3">
@@ -25,91 +26,142 @@
         <span class="text-2xl font-bold text-emerald-600">Connect</span>
       </div>
     </div>
-    <div class="flex items-center gap-6 text-sm">
-      <a href="../../marketplace.html" class="hover:text-emerald-600">Marketplace</a>
-      <button onclick="window.Main.logout()" class="px-5 py-2.5 border border-emerald-600 text-emerald-700 rounded-3xl hover:bg-emerald-50">Logout</button>
+    <div class="hidden sm:flex items-center gap-4 text-sm">
+      <a href="../../marketplace.html" class="hover:text-emerald-600 font-medium" data-i18n="nav_marketplace">Marketplace</a>
+      <div class="lang-switcher-slot"></div>
+      <button onclick="window.Main.logout()"
+        class="px-5 py-2.5 border border-emerald-600 text-emerald-700 rounded-3xl hover:bg-emerald-50 font-medium"
+        data-i18n="nav_logout">Logout</button>
+    </div>
+    <button id="hamburger" class="sm:hidden p-2 text-3xl text-emerald-700"><i class="fas fa-bars"></i></button>
+  </div>
+  <div id="mobile-menu" class="hidden sm:hidden bg-white border-t px-4 py-5">
+    <div class="flex flex-col gap-3 font-medium">
+      <a href="../../marketplace.html" class="py-3 px-4 hover:bg-emerald-50 rounded-2xl" data-i18n="nav_marketplace">Marketplace</a>
+      <div class="px-4 py-2"><div class="lang-switcher-slot"></div></div>
+      <button onclick="window.Main.logout()" class="mt-2 w-full py-4 bg-red-100 text-red-600 rounded-3xl font-medium" data-i18n="nav_logout">Logout</button>
     </div>
   </div>
 </nav>
 
 <div class="max-w-7xl mx-auto px-4 py-10">
 
-  <h1 id="welcome-text" class="text-3xl sm:text-4xl font-bold text-emerald-800">Welcome back, Buyer! 🛒</h1>
-  <p class="text-gray-600 mt-2">Discover fresh produce from local farmers</p>
+  <h1 id="welcome-text" class="text-3xl sm:text-4xl font-bold text-emerald-800" data-i18n="buyer_welcome">Welcome back, Buyer! 🛒</h1>
+  <p class="text-gray-600 mt-2" data-i18n="buyer_subtitle">Discover fresh produce from local farmers</p>
 
   <!-- Stats -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-10">
     <div class="bg-white rounded-3xl p-6 shadow">
-      <p class="text-gray-500">Available Products</p>
-      <p id="available-count" class="text-5xl font-bold text-emerald-700 mt-3">0</p>
+      <p class="text-gray-500 text-sm" data-i18n="buyer_available">Available Products</p>
+      <p id="available-count" class="text-5xl font-bold text-emerald-700 mt-3">—</p>
     </div>
     <div class="bg-white rounded-3xl p-6 shadow">
-      <p class="text-gray-500">Farmers Connected</p>
-      <p id="farmers-count" class="text-5xl font-bold text-emerald-700 mt-3">0</p>
+      <p class="text-gray-500 text-sm" data-i18n="buyer_farmers">Farmers Connected</p>
+      <p id="farmers-count" class="text-5xl font-bold text-emerald-700 mt-3">—</p>
     </div>
     <div class="bg-white rounded-3xl p-6 shadow">
-      <p class="text-gray-500">This Week</p>
+      <p class="text-gray-500 text-sm" data-i18n="buyer_this_week">This Week</p>
       <p id="this-week" class="text-5xl font-bold text-emerald-700 mt-3">12</p>
     </div>
   </div>
 
   <!-- Search -->
-  <div class="mt-10">
-    <input type="text" id="search-input" placeholder="Search products..." 
-      class="w-full px-6 py-5 rounded-3xl border border-gray-300 focus:border-emerald-600 text-base"
+  <div class="mt-10 relative">
+    <input type="text" id="search-input"
+      placeholder="Search products..."
+      data-i18n="buyer_search_ph"
+      class="w-full px-6 py-5 pl-14 rounded-3xl border border-gray-300 focus:border-emerald-600 focus:outline-none text-base"
       onkeyup="if(event.key === 'Enter') goToMarketplace()"/>
+    <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 text-xl"></i>
   </div>
 
   <!-- Fresh Picks -->
   <div class="mt-12">
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-2xl font-semibold">Fresh Picks for You</h2>
-      <a href="../../marketplace.html" class="text-emerald-600 font-medium">Browse All →</a>
+      <h2 class="text-2xl font-semibold" data-i18n="buyer_fresh_picks">Fresh Picks for You</h2>
+      <a href="../../marketplace.html" class="text-emerald-600 font-medium" data-i18n="buyer_browse_all">Browse All →</a>
     </div>
-    <div id="featured-products" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"></div>
-  </div>
-</div>
-
-<script>
-async function loadBuyerDashboard() {
-  const result = await window.API.getAllProducts();
-  if (!result.success) return;
-
-  const products = result.data || [];
-  document.getElementById('available-count').textContent = products.length;
-
-  const container = document.getElementById('featured-products');
-  container.innerHTML = products.slice(0, 8).map(p => `
-    <div onclick="window.location.href='../../marketplace.html?product=${p.id}'" 
-      class="bg-white rounded-3xl overflow-hidden shadow cursor-pointer active:scale-95">
-      <img src="${p.image_url || 'https://picsum.photos/id/201/400/300'}" class="w-full h-40 object-cover"/>
-      <div class="p-4">
-        <h3 class="font-semibold">${p.name}</h3>
-        <p class="text-emerald-600 font-bold text-xl">₹${p.price}/kg</p>
+    <div id="featured-products" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div class="col-span-full text-center py-10 text-gray-400">
+        <i class="fas fa-spinner fa-spin text-3xl"></i>
       </div>
     </div>
-  `).join('');
-}
+  </div>
 
-function goToMarketplace() {
-  const query = document.getElementById('search-input').value.trim();
-  window.location.href = query 
-    ? `../../marketplace.html?search=${encodeURIComponent(query)}` 
-    : "../../marketplace.html";
-}
+</div>
 
-document.addEventListener('DOMContentLoaded', () => {
-  if (!window.API.isLoggedIn()) {
-    window.location.href = "../../login.html";
-    return;
+<div id="toast-container" class="fixed bottom-6 left-1/2 -translate-x-1/2 space-y-3 z-50"></div>
+
+<script>
+  async function loadBuyerDashboard() {
+    const result = await window.API.getAllProducts();
+
+    if (!result.success) {
+      document.getElementById('featured-products').innerHTML =
+        `<p class="col-span-full text-center text-red-500 py-10">Failed to load products</p>`;
+      return;
+    }
+
+    const products = result.data || [];
+    document.getElementById('available-count').textContent = products.length;
+
+    // Count unique farmers
+    const uniqueFarmers = new Set(products.map(p => p.farmer_id)).size;
+    document.getElementById('farmers-count').textContent = uniqueFarmers;
+
+    const container = document.getElementById('featured-products');
+
+    if (products.length === 0) {
+      container.innerHTML = `<p class="col-span-full text-center text-gray-500 py-10" data-i18n="no_products">No products available</p>`;
+      applyTranslations();
+      return;
+    }
+
+    container.innerHTML = products.slice(0, 8).map(p => `
+      <div onclick="window.location.href='../../marketplace.html?product=${p.id}'"
+        class="bg-white rounded-3xl overflow-hidden shadow cursor-pointer active:scale-95 transition">
+        <img src="${p.image_url || 'https://picsum.photos/id/201/400/300'}"
+             class="w-full h-40 object-cover"
+             onerror="this.src='https://picsum.photos/id/201/400/300'"/>
+        <div class="p-4">
+          <h3 class="font-semibold truncate">${p.name}</h3>
+          <p class="text-emerald-600 font-bold text-xl mt-1">₹${p.price}/kg</p>
+        </div>
+      </div>
+    `).join('');
   }
-  const role = localStorage.getItem("user_type");
-  if (role !== "buyer") {
-    window.location.href = "../../marketplace.html";
-    return;
+
+  function goToMarketplace() {
+    const query = document.getElementById('search-input').value.trim();
+    window.location.href = query
+      ? `../../marketplace.html?search=${encodeURIComponent(query)}`
+      : "../../marketplace.html";
   }
-  loadBuyerDashboard();
-});
+
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('mobile-menu').classList.toggle('hidden');
+  });
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    document.querySelectorAll('.lang-switcher-slot').forEach(s => s.innerHTML = getLangSwitcherHTML());
+
+    const ok = await window.Main.checkAuth();
+    if (!ok) return;
+
+    if (window.API.getUserRole() !== "buyer") {
+      window.location.href = "../../marketplace.html";
+      return;
+    }
+
+    // Personalise greeting
+    const userResult = await window.API.getCurrentUser();
+    if (userResult.success && userResult.data) {
+      const name = userResult.data.full_name || userResult.data.name || 'Buyer';
+      document.getElementById('welcome-text').textContent = `Welcome back, ${name}! 🛒`;
+    }
+
+    loadBuyerDashboard();
+  });
 </script>
 </body>
 </html>

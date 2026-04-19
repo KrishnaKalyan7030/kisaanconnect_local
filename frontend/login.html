@@ -4,191 +4,177 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login - KisaanConnect</title>
-
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  
-  <!-- Core Scripts -->
+  <script src="js/translations.js"></script>
   <script src="js/api.js"></script>
   <script src="js/main.js"></script>
-
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
-    body { 
-      font-family: 'Poppins', sans-serif; 
-    }
+    body { font-family: 'Poppins', sans-serif; }
     .login-bg {
-      background: linear-gradient(rgba(22, 101, 52, 0.85), rgba(22, 101, 52, 0.9)), 
+      background: linear-gradient(rgba(22,101,52,0.85), rgba(22,101,52,0.9)),
                   url('https://picsum.photos/id/1015/1920/1080') center/cover;
     }
   </style>
 </head>
 <body class="bg-[#f8f9f5] min-h-screen">
 
-  <!-- Navbar -->
-  <nav class="bg-white shadow-sm border-b sticky top-0 z-50">
-    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <i class="fas fa-seedling text-3xl text-emerald-600"></i>
-        <div class="font-bold text-2xl">
-          <span class="text-emerald-700">Kisaan</span>
-          <span class="text-emerald-600">Connect</span>
-        </div>
+<!-- Navbar -->
+<nav class="bg-white shadow-sm border-b sticky top-0 z-50">
+  <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <i class="fas fa-seedling text-3xl text-emerald-600"></i>
+      <div class="font-bold text-2xl">
+        <span class="text-emerald-700">Kisaan</span>
+        <span class="text-emerald-600">Connect</span>
       </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <div class="lang-switcher-slot"></div>
       <a href="index.html" class="text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-2 text-sm sm:text-base">
-        <i class="fas fa-home"></i> Home
+        <i class="fas fa-home"></i>
+        <span data-i18n="nav_home">Home</span>
       </a>
     </div>
-  </nav>
+  </div>
+</nav>
 
-  <div class="min-h-[calc(100vh-73px)] flex items-center justify-center p-4 sm:p-6">
-    <div class="max-w-md w-full">
+<div class="min-h-[calc(100vh-73px)] flex items-center justify-center p-4 sm:p-6">
+  <div class="max-w-md w-full">
+    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
 
-      <!-- Login Card -->
-      <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
-        
-        <!-- Header -->
-        <div class="login-bg h-48 sm:h-52 flex items-center justify-center text-white">
-          <div class="text-center px-6">
-            <i class="fas fa-seedling text-5xl sm:text-6xl mb-4"></i>
-            <h1 class="text-2xl sm:text-3xl font-bold">Welcome Back</h1>
-            <p class="text-emerald-100 mt-2 text-sm sm:text-base">Login to continue</p>
-          </div>
+      <!-- Card Header -->
+      <div class="login-bg h-48 sm:h-52 flex items-center justify-center text-white">
+        <div class="text-center px-6">
+          <i class="fas fa-seedling text-5xl sm:text-6xl mb-4"></i>
+          <h1 class="text-2xl sm:text-3xl font-bold" data-i18n="login_title">Welcome Back</h1>
+          <p class="text-emerald-100 mt-2 text-sm sm:text-base" data-i18n="login_subtitle">Login to continue</p>
         </div>
+      </div>
 
-        <div class="p-6 sm:p-8">
-          <form id="login-form">
+      <div class="p-6 sm:p-8">
+        <!-- FIX: no onsubmit attribute — single listener added in JS below -->
+        <form id="login-form">
 
-            <!-- Email -->
-            <div class="mb-6">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-              <input type="email" id="email" 
-                class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-emerald-600 text-base"
-                placeholder="Enter your email" required />
-            </div>
-          
-            <!-- Password -->
-            <div class="mb-8">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-              <input type="password" id="password" 
-                class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-emerald-600 text-base"
-                placeholder="Enter your password" required />
-            </div>
-          
-            <!-- Login Button -->
-            <button type="submit" id="login-btn"
-              class="w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 transition-all text-white font-semibold text-lg py-4 rounded-3xl flex items-center justify-center gap-3">
-              <i class="fas fa-sign-in-alt"></i> Login
-            </button>
-          </form>
-
-          <!-- Register Link -->
-          <div class="text-center mt-8">
-            <p class="text-gray-600 text-sm">
-              Don't have an account? 
-              <a href="register.html" class="text-emerald-600 font-semibold hover:underline">Register Now</a>
-            </p>
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2" data-i18n="login_email">Email Address</label>
+            <input type="email" id="email"
+              class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-emerald-600 text-base"
+              placeholder="Enter your email" data-i18n="login_email_ph" required />
           </div>
+
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2" data-i18n="login_password">Password</label>
+            <input type="password" id="password"
+              class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-emerald-600 text-base"
+              placeholder="Enter your password" data-i18n="login_password_ph" required />
+          </div>
+
+          <!-- Inline error message (visible, not just console) -->
+          <div id="error-box" class="hidden mb-5 p-4 bg-red-50 border border-red-200 rounded-2xl text-red-700 text-sm flex items-start gap-2">
+            <i class="fas fa-exclamation-circle mt-0.5 flex-shrink-0"></i>
+            <span id="error-text"></span>
+          </div>
+
+          <button type="submit" id="login-btn"
+            class="w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 transition-all text-white font-semibold text-lg py-4 rounded-3xl flex items-center justify-center gap-3 min-h-[56px]">
+            <i class="fas fa-sign-in-alt"></i>
+            <span data-i18n="login_btn">Login</span>
+          </button>
+        </form>
+
+        <div class="text-center mt-8">
+          <p class="text-gray-600 text-sm">
+            <span data-i18n="login_no_account">Don't have an account?</span>
+            <a href="register.html" class="text-emerald-600 font-semibold hover:underline ml-1"
+               data-i18n="login_register_link">Register Now</a>
+          </p>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Toast Container -->
-  <div id="toast-container" class="fixed bottom-6 left-1/2 -translate-x-1/2 md:right-6 md:left-auto space-y-3 z-50"></div>
+<div id="toast-container" class="fixed bottom-6 left-1/2 -translate-x-1/2 space-y-3 z-50"></div>
 
-  <script>
-    // Show Toast Function
-    function showToast(message, type = "success") {
-      const toast = document.createElement('div');
-      const bg = type === 'success' ? 'bg-emerald-600' : 'bg-red-600';
-      toast.className = `${bg} text-white px-6 py-4 rounded-2xl shadow-xl flex items-center gap-3 text-sm md:text-base`;
-      toast.innerHTML = `
-        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
-        <span>${message}</span>
-      `;
-      document.getElementById('toast-container').appendChild(toast);
+<script>
+  function showError(msg) {
+    const box = document.getElementById('error-box');
+    document.getElementById('error-text').textContent = msg;
+    box.classList.remove('hidden');
+  }
+  function hideError() {
+    document.getElementById('error-box').classList.add('hidden');
+  }
 
-      setTimeout(() => {
-        toast.style.transition = 'opacity 0.3s';
-        toast.style.opacity = '0';
-        setTimeout(() => toast.remove(), 300);
-      }, 4000);
+  async function handleLogin(e) {
+    e.preventDefault();
+    hideError();
+
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const btn      = document.getElementById('login-btn');
+
+    if (!email || !password) {
+      showError("Please enter email and password");
+      return;
     }
 
-    // Handle Login
-    async function handleLogin(e) {
-      e.preventDefault();
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span>${window.t('login_logging_in')}</span>`;
 
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      const btn = document.getElementById('login-btn');
+    try {
+      const result = await window.API.login(email, password);
 
-      if (!email || !password) {
-        showToast("Please enter email and password", "error");
-        return;
+      if (result.success) {
+        window.Main.showToast("Login successful! Redirecting...", "success");
+        setTimeout(() => {
+          const userType = localStorage.getItem("user_type");
+          if (userType === "farmer") {
+            window.location.href = "dashboard/farmer/index.html";
+          } else if (userType === "buyer") {
+            window.location.href = "dashboard/buyer/index.html";
+          } else {
+            window.location.href = "index.html";
+          }
+        }, 1000);
+        return; // don't re-enable button during redirect
       }
 
-      // Disable button
-      btn.disabled = true;
-      btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Logging in...`;
-
-      try {
-        if (!window.API || typeof window.API.login !== 'function') {
-          throw new Error("API not loaded. Please refresh the page.");
-        }
-
-        const result = await window.API.login(email, password);
-
-        if (result.success) {
-          showToast("Login successful! Redirecting...", "success");
-
-          setTimeout(() => {
-            const userType = localStorage.getItem("user_type");
-            if (userType === "farmer") {
-              window.location.href = "dashboard/farmer/index.html";
-            } else if (userType === "buyer") {
-              window.location.href = "marketplace.html";
-            } else {
-              window.location.href = "index.html";
-            }
-          }, 1200);
-
-        } else {
-          const errorMsg = result.data?.detail || result.message || "Invalid email or password";
-          showToast(errorMsg, "error");
-        }
-      } catch (err) {
-        console.error(err);
-        showToast(err.message || "Network error. Please try again.", "error");
+      // Show error from backend
+      let errMsg = "Invalid email or password";
+      if (result.data?.detail) {
+        errMsg = typeof result.data.detail === "string"
+          ? result.data.detail
+          : JSON.stringify(result.data.detail);
+      } else if (result.message) {
+        errMsg = result.message;
       }
+      showError(errMsg);
 
-      // Reset button
-      btn.disabled = false;
-      btn.innerHTML = `<i class="fas fa-sign-in-alt"></i> Login`;
+    } catch (err) {
+      showError("Network error. Please check your connection.");
     }
 
-    // Auto redirect if already logged in
-    function checkIfLoggedIn() {
-      if (window.API && window.API.isLoggedIn()) {
-        const userType = localStorage.getItem("user_type");
-        if (userType === "farmer") {
-          window.location.href = "dashboard/farmer/index.html";
-        } else if (userType === "buyer") {
-          window.location.href = "marketplace.html";
-        }
-      }
-    }
+    btn.disabled = false;
+    btn.innerHTML = `<i class="fas fa-sign-in-alt"></i> <span data-i18n="login_btn">Login</span>`;
+    applyTranslations();
+  }
 
-    // Initialize
-    document.addEventListener("DOMContentLoaded", () => {
-      const form = document.getElementById('login-form');
-      if (form) {
-        form.addEventListener('submit', handleLogin);
-      }
-      
-      checkIfLoggedIn();
-    });
-  </script>
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll('.lang-switcher-slot').forEach(s => s.innerHTML = getLangSwitcherHTML());
+
+    // Single listener — no onsubmit on form
+    document.getElementById('login-form').addEventListener('submit', handleLogin);
+
+    // Auto-redirect if already logged in
+    if (window.API.isLoggedIn()) {
+      const t = localStorage.getItem("user_type");
+      if (t === "farmer") window.location.href = "dashboard/farmer/index.html";
+      else if (t === "buyer") window.location.href = "dashboard/buyer/index.html";
+    }
+  });
+</script>
 </body>
 </html>

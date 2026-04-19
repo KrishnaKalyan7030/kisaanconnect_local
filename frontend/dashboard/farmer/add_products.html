@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Add Product - KisaanConnect</title>
-
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="../../js/translations.js"></script>
   <script src="../../js/api.js"></script>
   <script src="../../js/main.js"></script>
-
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
     body { font-family: 'Poppins', sans-serif; }
   </style>
 </head>
@@ -23,9 +23,10 @@
       <i class="fas fa-seedling text-3xl text-emerald-600"></i>
       <h1 class="text-2xl font-bold text-emerald-700">KisaanConnect</h1>
     </div>
-    <div class="flex gap-4 text-sm">
-      <a href="index.html" class="text-emerald-600 font-medium">Dashboard</a>
-      <a href="my_products.html" class="text-emerald-600 font-medium">My Products</a>
+    <div class="flex items-center gap-3">
+      <div class="lang-switcher-slot"></div>
+      <a href="index.html" class="text-emerald-600 font-medium text-sm" data-i18n="nav_dashboard">Dashboard</a>
+      <a href="my_products.html" class="text-emerald-600 font-medium text-sm" data-i18n="nav_my_products">My Products</a>
     </div>
   </div>
 </nav>
@@ -34,131 +35,205 @@
   <div class="bg-white rounded-3xl shadow-xl p-6 sm:p-8">
 
     <h2 class="text-3xl font-bold text-emerald-700 mb-8 flex items-center gap-3">
-      <i class="fas fa-plus"></i> Add New Product
+      <i class="fas fa-plus"></i>
+      <span data-i18n="add_title">Add New Product</span>
     </h2>
 
+    <!-- Inline error box -->
+    <div id="error-box" class="hidden mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl text-red-700 text-sm flex items-start gap-2">
+      <i class="fas fa-exclamation-circle mt-0.5 flex-shrink-0"></i>
+      <span id="error-text"></span>
+    </div>
+
+    <!-- NO onsubmit here — single listener in JS -->
     <form id="product-form">
 
-      <!-- Image -->
+      <!-- Image Upload -->
       <div class="mb-8">
-        <label class="block mb-3 font-medium text-gray-700">Product Image <span class="text-red-500">*</span></label>
+        <label class="block mb-3 font-medium text-gray-700">
+          <span data-i18n="add_image">Product Image</span>
+          <span class="text-red-500 ml-1">*</span>
+        </label>
         <input type="file" id="image" accept="image/*" onchange="previewImage(event)" required
-          class="w-full p-4 border-2 border-dashed border-gray-300 rounded-2xl file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:bg-emerald-50 file:text-emerald-700"/>
+          class="w-full p-4 border-2 border-dashed border-gray-300 rounded-2xl text-sm
+                 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0
+                 file:bg-emerald-50 file:text-emerald-700 file:font-medium
+                 hover:border-emerald-400 transition cursor-pointer"/>
         <img id="preview" class="mt-6 rounded-2xl hidden w-full h-56 object-cover border"/>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
-          <label class="block mb-2 font-medium text-gray-700">Product Name <span class="text-red-500">*</span></label>
-          <input type="text" id="name" required class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:border-emerald-600"/>
+          <label class="block mb-2 font-medium text-gray-700">
+            <span data-i18n="add_name">Product Name</span>
+            <span class="text-red-500 ml-1">*</span>
+          </label>
+          <input type="text" id="name" required
+            class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-emerald-600 text-base"/>
         </div>
         <div>
-          <label class="block mb-2 font-medium text-gray-700">Price (₹/kg) <span class="text-red-500">*</span></label>
-          <input type="number" id="price" step="0.01" min="0" required class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:border-emerald-600"/>
+          <label class="block mb-2 font-medium text-gray-700">
+            <span data-i18n="add_price">Price (₹/kg)</span>
+            <span class="text-red-500 ml-1">*</span>
+          </label>
+          <input type="number" id="price" step="0.01" min="0" required
+            class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-emerald-600 text-base"/>
         </div>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
         <div>
-          <label class="block mb-2 font-medium text-gray-700">Quantity (kg) <span class="text-red-500">*</span></label>
-          <input type="number" id="quantity" min="0" required class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:border-emerald-600"/>
+          <label class="block mb-2 font-medium text-gray-700">
+            <span data-i18n="add_quantity">Quantity (kg)</span>
+            <span class="text-red-500 ml-1">*</span>
+          </label>
+          <input type="number" id="quantity" min="0" step="0.1" required
+            class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-emerald-600 text-base"/>
         </div>
         <div>
-          <label class="block mb-2 font-medium text-gray-700">Village <span class="text-red-500">*</span></label>
-          <input type="text" id="village" required class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:border-emerald-600"/>
+          <label class="block mb-2 font-medium text-gray-700">
+            <span data-i18n="add_village">Village</span>
+            <span class="text-red-500 ml-1">*</span>
+          </label>
+          <input type="text" id="village" required
+            class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-emerald-600 text-base"/>
         </div>
       </div>
 
       <div class="mt-6">
-        <label class="block mb-2 font-medium text-gray-700">Phone Number <span class="text-red-500">*</span></label>
-        <input type="tel" id="phone" required class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:border-emerald-600"/>
+        <label class="block mb-2 font-medium text-gray-700">
+          <span data-i18n="add_phone">Phone Number</span>
+          <span class="text-red-500 ml-1">*</span>
+        </label>
+        <input type="tel" id="phone" required
+          class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-emerald-600 text-base"/>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
         <div>
-          <label class="block mb-2 font-medium text-gray-700">Available Date <span class="text-red-500">*</span></label>
-          <input type="date" id="available_date" required class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:border-emerald-600"/>
+          <label class="block mb-2 font-medium text-gray-700">
+            <span data-i18n="add_date">Available Date</span>
+            <span class="text-red-500 ml-1">*</span>
+          </label>
+          <input type="date" id="available_date" required
+            class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-emerald-600 text-base"/>
         </div>
         <div>
-          <label class="block mb-2 font-medium text-gray-700">Available Time <span class="text-red-500">*</span></label>
-          <input type="time" id="available_time" required class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:border-emerald-600"/>
+          <label class="block mb-2 font-medium text-gray-700" data-i18n="add_time">Available Time</label>
+          <input type="time" id="available_time"
+            class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-emerald-600 text-base"/>
         </div>
       </div>
 
       <div class="mt-6">
-        <label class="block mb-2 font-medium text-gray-700">Description (Optional)</label>
-        <textarea id="description" rows="4" class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:border-emerald-600"></textarea>
+        <label class="block mb-2 font-medium text-gray-700" data-i18n="add_description">Description (Optional)</label>
+        <textarea id="description" rows="4"
+          class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-emerald-600 text-base resize-none"></textarea>
       </div>
 
       <button type="submit" id="submit-btn"
-        class="mt-10 w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white py-4 rounded-3xl font-semibold text-lg">
-        Add Product to Marketplace
+        class="mt-10 w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white py-4 rounded-3xl font-semibold text-lg flex items-center justify-center gap-3 min-h-[56px] transition">
+        <i class="fas fa-plus-circle"></i>
+        <span data-i18n="add_submit_btn">Add Product to Marketplace</span>
       </button>
     </form>
   </div>
 </div>
 
+<div id="toast-container" class="fixed bottom-6 left-1/2 -translate-x-1/2 space-y-3 z-50"></div>
+
 <script>
-// Preview Image
-function previewImage(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    document.getElementById("preview").src = e.target.result;
-    document.getElementById("preview").classList.remove("hidden");
-  };
-  reader.readAsDataURL(file);
-}
+  function previewImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const preview = document.getElementById("preview");
+      preview.src = e.target.result;
+      preview.classList.remove("hidden");
+    };
+    reader.readAsDataURL(file);
+  }
 
-// Submit Handler
-document.getElementById("product-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
+  function showError(msg) {
+    const box = document.getElementById('error-box');
+    document.getElementById('error-text').textContent = msg;
+    box.classList.remove('hidden');
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
 
-  const btn = document.getElementById("submit-btn");
-  const originalText = btn.innerHTML;
-  btn.disabled = true;
-  btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Adding...`;
+  function hideError() {
+    document.getElementById('error-box').classList.add('hidden');
+  }
 
-  if (!window.API.isLoggedIn()) {
-    window.Main.showToast("Please login first", "error");
+  async function handleSubmit(e) {
+    e.preventDefault();
+    hideError();
+
+    if (!window.API.isLoggedIn()) {
+      showError(window.t('add_login_first'));
+      setTimeout(() => window.location.href = "../../login.html", 1500);
+      return;
+    }
+
+    const imageFile = document.getElementById("image").files[0];
+    if (!imageFile) {
+      showError(window.t('add_select_image'));
+      return;
+    }
+
+    const btn = document.getElementById("submit-btn");
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span>${window.t('add_adding')}</span>`;
+
+    // Build FormData — backend expects multipart/form-data
+    const formData = new FormData();
+    formData.append("name",           document.getElementById("name").value.trim());
+    formData.append("village",        document.getElementById("village").value.trim());
+    formData.append("phone",          document.getElementById("phone").value.trim());
+    formData.append("price",          document.getElementById("price").value);
+    formData.append("quantity",       document.getElementById("quantity").value);
+    formData.append("available_date", document.getElementById("available_date").value);
+
+    const timeVal = document.getElementById("available_time").value;
+    if (timeVal) formData.append("available_time", timeVal);
+
+    const desc = document.getElementById("description").value.trim();
+    if (desc) formData.append("description", desc);
+
+    // Key must be "image" — matches backend: image: UploadFile = File(...)
+    formData.append("image", imageFile);
+
+    const result = await window.API.createProduct(formData);
+
+    if (result.success) {
+      window.Main.showToast(window.t('add_success'), "success");
+      setTimeout(() => window.location.href = "my_products.html", 1500);
+      return;
+    }
+
+    showError(result.message || window.t('add_fail'));
     btn.disabled = false;
-    btn.innerHTML = originalText;
-    return;
+    btn.innerHTML = `<i class="fas fa-plus-circle"></i> <span data-i18n="add_submit_btn">${window.t('add_submit_btn')}</span>`;
   }
 
-  const formData = new FormData();
-  formData.append("name", document.getElementById("name").value.trim());
-  formData.append("village", document.getElementById("village").value.trim());
-  formData.append("phone", document.getElementById("phone").value.trim());
-  formData.append("price", document.getElementById("price").value);
-  formData.append("quantity", document.getElementById("quantity").value);
-  formData.append("available_date", document.getElementById("available_date").value);
-  formData.append("available_time", document.getElementById("available_time").value);
-  formData.append("description", document.getElementById("description").value.trim() || "");
+  document.addEventListener("DOMContentLoaded", async () => {
+    document.querySelectorAll('.lang-switcher-slot').forEach(s => s.innerHTML = getLangSwitcherHTML());
 
-  const imageFile = document.getElementById("image").files[0];
-  if (!imageFile) {
-    window.Main.showToast("Please select an image", "error");
-    btn.disabled = false;
-    btn.innerHTML = originalText;
-    return;
-  }
-  formData.append("image", imageFile);
+    // Auth + role guard
+    const ok = await window.Main.checkAuth();
+    if (!ok) return;
+    if (window.API.getUserRole() !== "farmer") {
+      window.location.href = "../../marketplace.html";
+      return;
+    }
 
-  const result = await window.API.createProduct(formData);
+    // Single listener — no onsubmit attribute on form
+    document.getElementById('product-form').addEventListener('submit', handleSubmit);
 
-  if (result.success) {
-    window.Main.showToast("Product added successfully!", "success");
-    setTimeout(() => window.location.href = "my_products.html", 1500);
-  } else {
-    window.Main.showToast(result.message || "Failed to add product", "error");
-  }
-
-  btn.disabled = false;
-  btn.innerHTML = originalText;
-});
+    // Set min date to today
+    document.getElementById('available_date').min = new Date().toISOString().split('T')[0];
+  });
 </script>
-
 </body>
 </html>
