@@ -264,7 +264,7 @@ async def init_db():
 # FIX: allow_credentials=True is INCOMPATIBLE with allow_origins=["*"].
 # You MUST list frontend URLs explicitly when using credentials.
 ALLOWED_ORIGINS = [
-    "https://kisaanconnect-local.vercel.app"    # ← Replace with your actual Render frontend URL
+    "https://kisaanconnectlocal.vercel.app"    # ← Replace with your actual Render frontend URL
     "http://localhost:3000",
     "http://localhost:5500",
     "http://127.0.0.1:5500",
