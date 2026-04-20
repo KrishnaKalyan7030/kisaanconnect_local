@@ -113,6 +113,15 @@
           <p class="text-gray-500" data-i18n="mkt_village">Village</p>
           <p id="m-village" class="font-medium mt-1"></p>
         </div>
+        <div>
+          <p class="text-gray-500">Available Date</p>
+          <p id="m-date" class="font-medium mt-1"></p>
+        </div>
+        <div>
+          <p class="text-gray-500">Available Time</p>
+          <p id="m-time" class="font-medium mt-1"></p>
+        </div>
+        
       </div>
 
       <p id="m-phone" class="mt-6 text-sm font-medium text-gray-700"></p>
@@ -123,6 +132,13 @@
         <span data-i18n="mkt_contact_btn">Contact Farmer on WhatsApp</span>
       </button>
 
+      <!-- NEW: Farmer Info Button -->
+      <button onclick="viewFarmerInfo()"
+        class="mt-3 w-full bg-white border-2 border-emerald-600 hover:bg-emerald-50 text-emerald-700 py-4 rounded-3xl font-semibold text-lg flex items-center justify-center gap-3 min-h-[56px]">
+        <i class="fas fa-user-circle text-xl"></i>
+        <span data-i18n="mkt_farmer_info">Farmer Info</span>
+      </button>
+
       <button onclick="closeModal()"
         class="mt-3 w-full py-4 text-gray-600 font-medium min-h-[48px]"
         data-i18n="mkt_close">Close</button>
@@ -130,8 +146,86 @@
   </div>
 </div>
 
-<div id="toast-container" class="fixed bottom-6 left-1/2 -translate-x-1/2 space-y-3 z-50"></div>
+<!-- ==================== FARMER INFO MODAL ==================== -->
+<div id="farmer-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
+  <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full sm:max-w-lg max-h-[92vh] overflow-y-auto shadow-2xl">
+    <div class="relative p-6">
+      <button onclick="closeFarmerModal()" 
+        class="absolute top-4 right-4 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md z-10">
+        <i class="fas fa-times text-xl"></i>
+      </button>
 
+      <!-- Farmer Photo (Circle) -->
+      <div class="flex justify-center -mt-2">
+        <img id="f-image" 
+             class="w-32 h-32 rounded-full object-cover border-4 border-emerald-600 shadow-inner"
+             alt="Farmer" 
+             onerror="this.src='https://picsum.photos/id/64/300/300'">
+      </div>
+
+      <h3 id="f-name" class="text-2xl font-semibold text-center mt-6"></h3>
+
+      <div class="grid grid-cols-2 gap-6 mt-8 text-sm">
+        <div>
+          <p class="text-gray-500" data-i18n="mkt_village">Village</p>
+          <p id="f-village" class="font-medium mt-1"></p>
+        </div>
+        <div>
+          <p class="text-gray-500">District</p>
+          <p id="f-district" class="font-medium mt-1"></p>
+        </div>
+      </div>
+
+      <!-- Google Maps Button -->
+      <a id="f-map-link" href="#" target="_blank"
+         class="mt-8 flex items-center justify-center gap-3 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 py-4 rounded-3xl font-semibold text-base">
+        <i class="fas fa-map-marker-alt"></i>
+        <span data-i18n="mkt_view_map">View on Google Maps</span>
+      </a>
+
+      <!-- About the Farmer -->
+      <div class="mt-10">
+        <p class="text-gray-500 font-medium mb-3" data-i18n="mkt_about_farmer">About the Farmer</p>
+        <p id="f-about" class="text-gray-600 leading-relaxed text-base"></p>
+      </div>
+
+      <button onclick="closeFarmerModal()" 
+        class="mt-10 w-full py-4 text-gray-600 font-medium min-h-[48px]"
+        data-i18n="mkt_close">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== LOGIN REQUIRED MODAL ==================== -->
+<div id="auth-prompt-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
+  <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full sm:max-w-md shadow-2xl">
+    <div class="p-8 text-center">
+      <i class="fas fa-lock text-6xl text-emerald-600 mb-6"></i>
+      <h3 class="text-2xl font-semibold" data-i18n="mkt_login_required">Login Required</h3>
+      <p class="text-gray-600 mt-3 leading-tight" data-i18n="mkt_farmer_private">
+        Farmer details are private and crucial.<br>Only logged-in buyers can view them.
+      </p>
+
+      <div class="mt-10 flex flex-col gap-4">
+        <button onclick="goToLogin()" 
+          class="w-full bg-emerald-600 text-white py-4 rounded-3xl font-semibold text-lg">
+          Login to Continue
+        </button>
+        <button onclick="goToRegister()" 
+          class="w-full border-2 border-emerald-600 text-emerald-700 py-4 rounded-3xl font-semibold text-lg">
+          Register as New Buyer
+        </button>
+      </div>
+
+      <button onclick="closeAuthPrompt()" 
+        class="mt-6 text-gray-500 font-medium text-sm"
+        data-i18n="mkt_cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container" class="fixed bottom-6 left-1/2 -translate-x-1/2 space-y-3 z-50"></div>
+<!-- 
 <script>
   let allProducts = [];
   let currentProduct = null;
@@ -206,6 +300,8 @@
     document.getElementById("m-qty").textContent = `${product.quantity || 'N/A'} kg`;
     document.getElementById("m-village").textContent = product.village || 'N/A';
     document.getElementById("m-phone").textContent = `${window.t('mkt_phone')} ${product.phone || 'Not available'}`;
+    document.getElementById("m-date").textContent = product.available_date || 'N/A';
+  document.getElementById("m-time").textContent = product.available_time || 'N/A';
     document.getElementById("modal").classList.remove("hidden");
     document.body.style.overflow = "hidden";
   }
@@ -237,6 +333,180 @@
     document.querySelectorAll('.lang-switcher-slot').forEach(s => s.innerHTML = getLangSwitcherHTML());
     loadProducts();
   });
+</script> -->
+
+<script>
+  let allProducts = [];
+  let currentProduct = null;
+
+  async function loadProducts() {
+    try {
+      const result = await window.API.getAllProducts();
+      if (result.success) {
+        allProducts = result.data || [];
+        renderProducts(allProducts);
+
+        // Handle direct product link
+        const urlParams = new URLSearchParams(window.location.search);
+        const pid = urlParams.get('product');
+        if (pid) {
+          const p = allProducts.find(x => String(x.id) === String(pid));
+          if (p) openModal(p);
+        }
+        const searchQ = urlParams.get('search');
+        if (searchQ) {
+          document.getElementById('search').value = searchQ;
+          filterProducts();
+        }
+      } else {
+        window.API.showToast("Failed to load products", "error");
+      }
+    } catch (err) {
+      window.API.showToast("Server error. Please try again.", "error");
+    }
+  }
+
+  function renderProducts(products) {
+    const container = document.getElementById("products");
+    const empty = document.getElementById("empty");
+    container.innerHTML = "";
+    if (!products || products.length === 0) {
+      empty.classList.remove("hidden");
+      applyTranslations();
+      return;
+    }
+    empty.classList.add("hidden");
+    products.forEach(p => {
+      const imageUrl = p.image_url || "https://picsum.photos/id/1015/400/300";
+      const card = document.createElement("div");
+      card.className = "product-card bg-white rounded-3xl overflow-hidden shadow-sm cursor-pointer";
+      card.innerHTML = `
+        <img src="${imageUrl}" class="w-full h-40 sm:h-48 object-cover"
+             onerror="this.src='https://picsum.photos/id/1015/400/300'"/>
+        <div class="p-4">
+          <h3 class="font-semibold text-base sm:text-lg line-clamp-2">${p.name}</h3>
+          <p class="text-emerald-600 font-bold text-2xl mt-2">₹${p.price}/kg</p>
+          <p class="text-gray-500 text-sm mt-1">${p.quantity || 'N/A'} kg</p>
+        </div>
+      `;
+      card.onclick = () => openModal(p);
+      container.appendChild(card);
+    });
+  }
+
+  function filterProducts() {
+    const q = document.getElementById("search").value.toLowerCase().trim();
+    renderProducts(q ? allProducts.filter(p => p.name.toLowerCase().includes(q)) : allProducts);
+  }
+
+  function openModal(product) {
+    currentProduct = product;
+    document.getElementById("m-image").src = product.image_url || "https://picsum.photos/id/1015/400/300";
+    document.getElementById("m-name").textContent = product.name;
+    document.getElementById("m-price").textContent = `₹${product.price}/kg`;
+    document.getElementById("m-qty").textContent = `${product.quantity || 'N/A'} kg`;
+    document.getElementById("m-village").textContent = product.village || 'N/A';
+    document.getElementById("m-phone").textContent = `${window.t ? window.t('mkt_phone') : 'Phone:'} ${product.phone || 'Not available'}`;
+    document.getElementById("m-date").textContent = product.available_date || 'N/A';
+    document.getElementById("m-time").textContent = product.available_time || 'N/A';
+    document.getElementById("modal").classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeModal() {
+    document.getElementById("modal").classList.add("hidden");
+    document.body.style.overflow = "";
+  }
+
+  function contactFarmer() {
+    if (!currentProduct?.phone) {
+      window.API.showToast("Phone number not available", "error");
+      return;
+    }
+    const phone = currentProduct.phone.replace(/\D/g, '');
+    window.open(`https://wa.me/91${phone}`, "_blank");
+  }
+
+  // ==================== NEW: Farmer Info Feature ====================
+
+  function viewFarmerInfo() {
+    if (!currentProduct) return;
+
+    // Use your existing API method - very reliable
+    if (window.API.isLoggedIn()) {
+      openFarmerModal(currentProduct);
+    } else {
+      openAuthPrompt();
+    }
+  }
+
+  function openFarmerModal(product) {
+    document.getElementById("f-image").src = product.farmer_image_url || "https://picsum.photos/id/64/300/300";
+    document.getElementById("f-name").textContent = product.farmer_name || "Local Farmer";
+    document.getElementById("f-village").textContent = product.village || "N/A";
+    document.getElementById("f-district").textContent = product.district || "N/A";
+
+    // Auto-generated Google Maps link (works well for Indian villages)
+    const query = encodeURIComponent(`${product.village || ''}, ${product.district || ''}, India`);
+    document.getElementById("f-map-link").href = `https://www.google.com/maps/search/?api=1&query=${query}`;
+
+    document.getElementById("f-about").textContent = 
+      product.farmer_about || "This farmer is part of our trusted local network supplying fresh produce.";
+
+    document.getElementById("farmer-modal").classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeFarmerModal() {
+    document.getElementById("farmer-modal").classList.add("hidden");
+    document.body.style.overflow = "";
+  }
+
+  function openAuthPrompt() {
+    document.getElementById("auth-prompt-modal").classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeAuthPrompt() {
+    document.getElementById("auth-prompt-modal").classList.add("hidden");
+    document.body.style.overflow = "";
+  }
+
+  function goToLogin() {
+    closeAuthPrompt();
+    window.location.href = "login.html";
+  }
+
+  function goToRegister() {
+    closeAuthPrompt();
+    window.location.href = "register.html";
+  }
+
+  // Backdrop click handlers for all modals
+  document.getElementById("modal").addEventListener("click", function(e) {
+    if (e.target === this) closeModal();
+  });
+  document.getElementById("farmer-modal").addEventListener("click", function(e) {
+    if (e.target === this) closeFarmerModal();
+  });
+  document.getElementById("auth-prompt-modal").addEventListener("click", function(e) {
+    if (e.target === this) closeAuthPrompt();
+  });
+
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('mobile-menu').classList.toggle('hidden');
+  });
+
+  // document.addEventListener("DOMContentLoaded", () => {
+  //   document.querySelectorAll('.lang-switcher-slot').forEach(s => s.innerHTML = getLangSwitcherHTML());
+  //   loadProducts();
+  // });
+
+  document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll('.lang-switcher-slot').forEach(s => s.innerHTML = getLangSwitcherHTML());
+  loadProducts();
+  applyTranslations();   // ← Add this line
+});
 </script>
 </body>
 </html>

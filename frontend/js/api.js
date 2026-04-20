@@ -210,7 +210,6 @@ const BASE_URL = "https://kisaanconnect-backend.onrender.com";
 function setToken(token) {
   localStorage.setItem("access_token", token);
 }
-
 function getToken() {
   return localStorage.getItem("access_token");
 }
@@ -227,19 +226,43 @@ function getAuthHeaders() {
 window.API = {
 
   // ── REGISTER ────────────────────────────────────────────────────────────────
+  // async register(userData) {
+  //   try {
+  //     const res = await fetch(`${BASE_URL}/auth/register`, {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify(userData)
+  //     });
+  //     const data = await res.json();
+  //     return { success: res.ok, data };
+  //   } catch (err) {
+  //     return { success: false, message: "Network error. Please check your connection." };
+  //   }
+  // },
+
   async register(userData) {
-    try {
-      const res = await fetch(`${BASE_URL}/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userData)
-      });
-      const data = await res.json();
-      return { success: res.ok, data };
-    } catch (err) {
-      return { success: false, message: "Network error. Please check your connection." };
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
+    const res = await fetch(`${BASE_URL}/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(userData),
+      signal: controller.signal
+    });
+
+    clearTimeout(timeout);
+    const data = await res.json();
+    return { success: res.ok, data };
+
+  } catch (err) {
+    if (err.name === "AbortError") {
+      return { success: false, message: "Server is waking up, please try again in 30 seconds." };
     }
-  },
+    return { success: false, message: "Network error. Please check your connection." };
+  }
+},
 
   // ── LOGIN ────────────────────────────────────────────────────────────────────
   // Backend uses OAuth2PasswordRequestForm → must send as form-urlencoded
@@ -354,14 +377,11 @@ window.API = {
 
   // ── LOGOUT ───────────────────────────────────────────────────────────────────
   // FIX: use relative path so it works regardless of deployment subdirectory
-  logout() {
+ logout() {
     localStorage.removeItem("access_token");
     localStorage.removeItem("user_type");
-    // Detect depth from current path and go up to root
-    const depth = (window.location.pathname.match(/\//g) || []).length - 1;
-    const prefix = depth > 1 ? "../".repeat(depth - 1) : "";
-    window.location.href = prefix + "login.html";
-  },
+    window.location.href = window.location.origin + "/login.html";
+},
 
   // ── AUTH CHECK ───────────────────────────────────────────────────────────────
   isLoggedIn() {
